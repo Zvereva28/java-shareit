@@ -25,6 +25,7 @@ public class UserServiceImpl implements UserService {
         log.debug("+ createUser : {}", newUser);
         User answer = userStorage.addUser(newUser);
         log.debug("- createUser : {}", answer);
+
         return answer;
     }
 
@@ -33,6 +34,7 @@ public class UserServiceImpl implements UserService {
         log.debug("+ updateUser : id = {}, user = {}", id, newUser);
         User answer = userStorage.updateUser(id, newUser);
         log.debug("- updateUser : {}", answer);
+
         return answer;
     }
 
@@ -46,6 +48,7 @@ public class UserServiceImpl implements UserService {
         log.debug("+ getAllUsers : ");
         var users = userStorage.getAllUsers();
         log.debug("- getAllUsers : {}", users);
+
         return users;
     }
 

@@ -26,6 +26,7 @@ class ItemServiceImpl implements ItemService {
         userStorage.userExist(idOwner);
         Item newItem = itemStorage.addItem(idOwner, item);
         log.debug("- addItem : item = {}", newItem);
+
         return newItem;
     }
 
@@ -35,6 +36,7 @@ class ItemServiceImpl implements ItemService {
         userStorage.userExist(idUser);
         Item newItem = itemStorage.updateItem(idUser, idItem, item);
         log.debug("- updateItem : {}", newItem);
+
         return newItem;
 
     }
@@ -44,6 +46,7 @@ class ItemServiceImpl implements ItemService {
         log.debug("+ getItem : idItem = {}", id);
         Item item = itemStorage.getItem(id);
         log.debug("- getItem : {}", id);
+
         return item;
     }
 
@@ -53,6 +56,7 @@ class ItemServiceImpl implements ItemService {
         userStorage.userExist(idUser);
         var answer = itemStorage.getAllItems(idUser);
         log.debug("- getAllItems : {}", answer);
+
         return answer;
     }
 
@@ -61,6 +65,7 @@ class ItemServiceImpl implements ItemService {
         log.debug("+ searchItem : text = " + text);
         var answer = itemStorage.searchItem(text);
         log.debug("- searchItem : {}", answer);
+
         return itemStorage.searchItem(text);
     }
 }

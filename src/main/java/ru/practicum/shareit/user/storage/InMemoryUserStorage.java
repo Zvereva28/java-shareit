@@ -26,6 +26,7 @@ public class InMemoryUserStorage implements UserStorage {
         checkUniqueEmail(user.getEmail());
         user.setId(generateId());
         users.put(user.getId(), user);
+
         return user;
     }
 
@@ -63,6 +64,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User getUser(int id) {
         userExist(id);
+
         return users.get(id);
     }
 
@@ -74,6 +76,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     private Integer generateId() {
         idManager++;
+
         return idManager;
     }
 

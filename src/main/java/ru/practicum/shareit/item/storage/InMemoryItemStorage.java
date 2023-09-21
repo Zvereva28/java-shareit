@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 @Slf4j
 @Component
@@ -29,6 +28,7 @@ public class InMemoryItemStorage implements ItemStorage {
         item.setId(generateId());
         item.setOwner(idOwner);
         items.put(item.getId(), item);
+
         return item;
     }
 
@@ -57,6 +57,7 @@ public class InMemoryItemStorage implements ItemStorage {
     @Override
     public Item getItem(int id) {
         itemExist(id);
+
         return items.get(id);
     }
 
