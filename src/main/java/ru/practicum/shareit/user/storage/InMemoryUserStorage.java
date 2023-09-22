@@ -40,20 +40,23 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User updateUser(int id, User user) {
         userExist(id);
+        User newUser = users.get(id);
         if (Objects.nonNull(user.getName())) {
-            users.get(id).setName(user.getName());
+            newUser.setName(user.getName());
+
         }
         if (Objects.nonNull(user.getEmail())) {
             String email = user.getEmail();
-            ArrayList<User> userArrayList = getAllUsers();
-            for (User userOne : userArrayList) {
+            for (User userOne : users.values()) {
                 if (userOne.getEmail().equals(email) && (userOne.getId() != id)) {
                     throw new EmailException("Пользователя с email = " + email + " уже существует");
                 }
             }
-            users.get(id).setEmail(user.getEmail());
+            newUser.setEmail(user.getEmail());
         }
-        return users.get(id);
+        users.put(id, newUser);
+
+        return newUser;
     }
 
     @Override
@@ -81,8 +84,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     void checkUniqueEmail(String email) {
-        ArrayList<User> userArrayList = getAllUsers();
-        for (User user : userArrayList) {
+        for (User user : users.values()) {
             if (user.getEmail().equals(email)) {
                 throw new EmailException("Пользователя с email = " + email + " уже существует");
             }

@@ -39,19 +39,21 @@ public class InMemoryItemStorage implements ItemStorage {
         if (idOwner != items.get(idItem).getOwner()) {
             throw new ItemNotFoundException("Предмет с id = " + idItem + " не принадлежит пользователю");
         }
+        Item newItem = items.get(idItem);
         if (null != item.getName()) {
-            items.get(idItem).setName(item.getName());
+            newItem.setName(item.getName());
         }
 
         if (null != item.getDescription()) {
-            items.get(idItem).setDescription(item.getDescription());
+            newItem.setDescription(item.getDescription());
         }
 
         if (null != item.getAvailable()) {
-            items.get(idItem).setAvailable(item.getAvailable());
+            newItem.setAvailable(item.getAvailable());
         }
+        items.put(idItem, newItem);
 
-        return items.get(idItem);
+        return newItem;
     }
 
     @Override

@@ -4,9 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
+import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -21,40 +23,43 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User addUser(User newUser) {
-        log.debug("+ createUser : {}", newUser);
-        User answer = userStorage.addUser(newUser);
-        log.debug("- createUser : {}", answer);
+    public UserDto addUser(UserDto newUser) {
+        log.info("+ createUser : {}", newUser);
+        User answer = userStorage.addUser(UserDto.toUser(newUser));
+        log.info("- createUser : {}", answer);
 
-        return answer;
+        return UserDto.toUserDto(answer);
     }
 
     @Override
-    public User updateUser(int id, User newUser) {
-        log.debug("+ updateUser : id = {}, user = {}", id, newUser);
-        User answer = userStorage.updateUser(id, newUser);
-        log.debug("- updateUser : {}", answer);
+    public UserDto updateUser(int id, UserDto newUser) {
+        log.info("+ updateUser : id = {}, user = {}", id, newUser);
+        User answer = userStorage.updateUser(id, UserDto.toUser(newUser));
+        log.info("- updateUser : {}", answer);
 
-        return answer;
+        return UserDto.toUserDto(answer);
     }
 
     @Override
-    public User getUser(int id) {
-        return userStorage.getUser(id);
+    public UserDto getUser(int id) {
+        return UserDto.toUserDto(userStorage.getUser(id));
     }
 
     @Override
-    public List<User> getAllUsers() {
-        log.debug("+ getAllUsers : ");
-        var users = userStorage.getAllUsers();
-        log.debug("- getAllUsers : {}", users);
+    public List<UserDto> getAllUsers() {
+        log.info("+ getAllUsers : ");
+        List<UserDto> usersDto = new ArrayList<>();
+        for (User user : userStorage.getAllUsers()) {
+            usersDto.add(UserDto.toUserDto(user));
+        }
+        log.info("- getAllUsers : {}", usersDto);
 
-        return users;
+        return usersDto;
     }
 
     @Override
     public void deleteUser(int id) {
-        log.debug("+ deleteUser : idUser = {}", id);
+        log.info("+ deleteUser : idUser = {}", id);
         List<Item> items = itemStorage.getAllItems(id);
         if (!items.isEmpty()) {
             Item newItem = new Item();
@@ -64,6 +69,6 @@ public class UserServiceImpl implements UserService {
             }
         }
         userStorage.deleteUser(id);
-        log.debug("- deleteUser : idUser = {}", id);
+        log.info("- deleteUser : idUser = {}", id);
     }
 }
