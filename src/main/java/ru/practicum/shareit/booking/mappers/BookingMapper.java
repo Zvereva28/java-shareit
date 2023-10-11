@@ -1,26 +1,24 @@
 package ru.practicum.shareit.booking.mappers;
 
-import org.springframework.jdbc.core.RowMapper;
-import ru.practicum.shareit.booking.Status;
-import ru.practicum.shareit.booking.dto.BookingDto;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
+import ru.practicum.shareit.booking.dto.*;
+import ru.practicum.shareit.booking.model.Booking;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
+@Mapper
+public interface BookingMapper {
 
-public class BookingMapper implements RowMapper<BookingDto> {
+    BookingMapper INSTANCE = Mappers.getMapper(BookingMapper.class);
 
-    @Override
-    public BookingDto mapRow(ResultSet rs, int rowNum) throws SQLException {
-        BookingDto booking = new BookingDto();
-        booking.setId(rs.getInt("id"));
-        booking.setName(rs.getString("name"));
-        booking.setStart(rs.getDate("start_date").toLocalDate());
-        booking.setEnd(rs.getDate("end_date").toLocalDate());
-        booking.setItemId(rs.getInt("item_id"));
-        booking.setBookerId(rs.getInt("booker_id"));
-        Status.valueOf(rs.getString("status"));
+    Booking toBooking(BookingDto bookingDto);
 
-        return booking;
-    }
+    BookingReplyDto toBookingReplyDto(Booking booking);
+
+    @Mapping(target = "bookerId", source = "booking.booker.id")
+    LastBookingDto lastBookingDto(Booking booking);
+
+    @Mapping(target = "bookerId", source = "booking.booker.id")
+    NextBookingDto nextBookingDto(Booking booking);
 }

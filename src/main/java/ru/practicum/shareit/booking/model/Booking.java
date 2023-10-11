@@ -1,31 +1,42 @@
 package ru.practicum.shareit.booking.model;
 
-import lombok.Data;
-import ru.practicum.shareit.booking.Status;
+import lombok.*;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
 
-import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
+import javax.persistence.*;
+import java.time.LocalDateTime;
 
-@Data
+
+@Getter
+@Setter
+@ToString
+@Entity
+@Table(name = "booking", schema = "public")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Booking {
 
-    private int id;
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
-    @NotNull(message = "name may not be null")
-    private String name;
+    @Column(name = "start_date", nullable = false)
+    private LocalDateTime start;
 
-    @NotNull(message = "start may not be null")
-    private LocalDate start;
+    @Column(name = "end_date", nullable = false)
+    private LocalDateTime end;
 
-    @NotNull(message = "end may not be null")
-    private LocalDate end;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_id")
+    private Item item;
 
-    @NotNull(message = "end may not be null")
-    private int item;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "booker_id")
+    private User booker;
 
-    @NotNull(message = "booker may not be null")
-    private int booker;
-
-    private Status status;
+    @Column(name = "status")
+    private String status;
 
 }

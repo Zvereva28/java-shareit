@@ -1,24 +1,20 @@
 package ru.practicum.shareit.item.mappers;
 
-import org.springframework.jdbc.core.RowMapper;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemOwnerDto;
+import ru.practicum.shareit.item.model.Item;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
+@Mapper
+public interface ItemMapper {
 
-public class ItemMapper implements RowMapper<ItemDto> {
+    ItemMapper INSTANCE = Mappers.getMapper(ItemMapper.class);
 
-    @Override
-    public ItemDto mapRow(ResultSet rs, int rowNum) throws SQLException {
-        ItemDto itemDto = new ItemDto();
-        itemDto.setId(rs.getInt("id"));
-        itemDto.setName(rs.getString("name"));
-        itemDto.setDescription(rs.getString("description"));
-        itemDto.setAvailable(rs.getBoolean("available"));
-        itemDto.setOwner(rs.getInt("owner"));
-        itemDto.setRequestId(rs.getInt("request_id"));
+    ItemDto toItemDto(Item item);
 
-        return itemDto;
-    }
+    Item toItem(ItemDto itemDto);
+
+    ItemOwnerDto toItemOwnerDto(Item item);
 }

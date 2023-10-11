@@ -1,25 +1,26 @@
 package ru.practicum.shareit.booking.dto;
 
-import lombok.Data;
-import ru.practicum.shareit.booking.Status;
+import lombok.*;
 
-import java.time.LocalDate;
+import javax.validation.constraints.*;
+import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@ToString
 public class BookingDto {
 
-    private int id;
+    private Long id;
 
-    private String name;
+    @NotNull
+    @FutureOrPresent(message = "Начало аренды не должно быть в прошлом")
+    private LocalDateTime start;
 
-    private LocalDate start;
+    @NotNull
+    @Future(message = "Завершение аренды не должно быть в прошлом")
+    private LocalDateTime end;
 
-    private LocalDate end;
-
-    private int itemId;
-
-    private int bookerId;
-
-    private Status status;
+    private long itemId;
 
 }
+
