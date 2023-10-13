@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item.dto;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import ru.practicum.shareit.booking.dto.LastBookingDto;
 import ru.practicum.shareit.booking.dto.NextBookingDto;
 

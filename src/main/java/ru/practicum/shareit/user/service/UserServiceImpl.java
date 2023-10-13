@@ -9,7 +9,7 @@ import ru.practicum.shareit.user.exception.EmailException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserRepository;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto addUser(UserDto userDto) {
         User user = repository.save(UserMapper.INSTANCE.toUser(userDto));
-        log.info("Создан новый пользователь: '{}'", user);
+        log.debug("Создан новый пользователь: '{}'", user);
         return UserMapper.INSTANCE.toUserDto(user);
     }
 
@@ -41,14 +41,14 @@ public class UserServiceImpl implements UserService {
         user.setName(userDto.getName() != null ? userDto.getName() : user.getName());
         user.setEmail(userDto.getEmail() != null ? userDto.getEmail() : user.getEmail());
         repository.saveAndFlush(user);
-        log.info("Пользователь '{}' - обновлен", user);
+        log.debug("Пользователь '{}' - обновлен", user);
         return UserMapper.INSTANCE.toUserDto(user);
     }
 
     @Override
     public UserDto getUser(long userId) {
         User user = ifUserExistReturnUser(userId);
-        log.info("Получен пользователь '{}'", user);
+        log.debug("Получен пользователь '{}'", user);
         return UserMapper.INSTANCE.toUserDto(user);
     }
 
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(long userId) {
         repository.deleteById(userId);
-        log.info("Пользователь с id '{}' - удален", userId);
+        log.debug("Пользователь с id '{}' - удален", userId);
     }
 
     @Override

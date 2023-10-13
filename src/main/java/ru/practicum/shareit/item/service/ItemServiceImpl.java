@@ -6,21 +6,27 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.mappers.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.storage.BookingRepository;
-import ru.practicum.shareit.item.dto.*;
-import ru.practicum.shareit.item.exeption.*;
+import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemOwnerDto;
+import ru.practicum.shareit.item.exeption.ItemBookerException;
+import ru.practicum.shareit.item.exeption.ItemException;
+import ru.practicum.shareit.item.exeption.ItemNotFoundException;
 import ru.practicum.shareit.item.mappers.CommentMapper;
 import ru.practicum.shareit.item.mappers.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.storage.CommentRepository;
-import ru.practicum.shareit.item.storage.ItemRepository;
+import ru.practicum.shareit.item.repository.CommentRepository;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserRepository;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -41,7 +47,7 @@ public class ItemServiceImpl implements ItemService {
         User user = ifUserExistReturnUser(userId);
         Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
         item.setUser(user);
-        log.info("Создана новая вещь - '{}'", item);
+        log.debug("Создана новая вещь - '{}'", item);
 
         return ItemMapper.INSTANCE.toItemDto(item);
     }
@@ -55,7 +61,7 @@ public class ItemServiceImpl implements ItemService {
         item.setName(itemDto.getName() != null ? itemDto.getName() : item.getName());
         item.setDescription(itemDto.getDescription() != null ? itemDto.getDescription() : item.getDescription());
         item.setAvailable(itemDto.getAvailable() != null ? itemDto.getAvailable() : item.getAvailable());
-        log.info("Вещь '{}' - обновлена", item);
+        log.debug("Вещь '{}' - обновлена", item);
 
         return ItemMapper.INSTANCE.toItemDto(item);
     }
@@ -68,7 +74,7 @@ public class ItemServiceImpl implements ItemService {
         if (item.getUser().getId() != userId) {
             ItemOwnerDto itemOwnerDto = ItemMapper.INSTANCE.toItemOwnerDto(item);
             itemOwnerDto.setComments(comments);
-            log.info("Получена вещь '{}'", item);
+            log.debug("Получена вещь '{}'", item);
             return itemOwnerDto;
         }
         List<Booking> lastBookings = bookingRepository.findFirstByItemIdAndEndDateBefore(itemId);
@@ -81,7 +87,7 @@ public class ItemServiceImpl implements ItemService {
         itemOwnerDto.setNextBooking(BookingMapper.INSTANCE.nextBookingDto(nextBooking));
         itemOwnerDto.setComments(comments);
 
-        log.info("Владельцем получена вещь '{}'", itemOwnerDto);
+        log.debug("Владельцем получена вещь '{}'", itemOwnerDto);
 
         return itemOwnerDto;
     }
@@ -90,8 +96,8 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> getAllItems(long userId) {
         ifUserExistReturnUser(userId);
 
-        List<Item> items = itemRepository.findAllByUserIdOrderByIdAsc(userId);
-        List<ItemDto> itemDtos = new ArrayList<>();
+        final List<Item> items = itemRepository.findAllByUserIdOrderByIdAsc(userId);
+        List<ItemDto> itemsDto = new ArrayList<>();
 
         for (Item item : items) {
             ItemOwnerDto itemDto = ItemMapper.INSTANCE.toItemOwnerDto(item);
@@ -104,17 +110,17 @@ public class ItemServiceImpl implements ItemService {
             itemDto.setLastBooking(BookingMapper.INSTANCE.lastBookingDto(lastBooking));
             itemDto.setNextBooking(BookingMapper.INSTANCE.nextBookingDto(nextBooking));
             itemDto.setComments(comments);
-            itemDtos.add(itemDto);
+            itemsDto.add(itemDto);
         }
-        log.info("Получен список вещей пользователя с id '{}'", userId);
-        return itemDtos;
+        log.debug("Получен список вещей пользователя с id '{}'", userId);
+        return itemsDto;
 
     }
 
     @Override
     public List<ItemDto> searchItem(long userId, String searchText) {
         if (searchText.isEmpty()) {
-            log.info("Не было найдено ни одного предмета по запросу '{}'", searchText);
+            log.debug("Не было найдено ни одного предмета по запросу '{}'", searchText);
             return Collections.emptyList();
         }
         List<ItemDto> items = itemRepository.findByUserAndNameOrDescription(userId, searchText)
@@ -140,7 +146,7 @@ public class ItemServiceImpl implements ItemService {
                 .stream()
                 .filter(b -> b.getEnd().isBefore(LocalDateTime.now()))
                 .collect(Collectors.toList());
-        if (bookings.size() == 0) {
+        if (bookings.isEmpty()) {
             throw new ItemBookerException(
                     String.format("Вещь с id %d не была арендована пользователем с id %d", itemId, userId));
         }

@@ -18,6 +18,8 @@
 	<properties>
 		<java.version>11</java.version>
 		<org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
+		<querydsl-jpa.version>5.0.0</querydsl-jpa.version>
+		<projectlombok.version>0.2.0</projectlombok.version>
 	</properties>
 
 	<dependencies>
@@ -43,7 +45,7 @@
 		<dependency>
 			<groupId>com.querydsl</groupId>
 			<artifactId>querydsl-jpa</artifactId>
-			<version>5.0.0</version>
+			<version>${querydsl-jpa.version}</version>
 		</dependency>
 
 		<dependency>
@@ -75,12 +77,12 @@
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
-			<version>1.5.5.Final</version>
+			<version>${org.mapstruct.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok-mapstruct-binding</artifactId>
-			<version>0.2.0</version>
+			<version>${projectlombok.version}</version>
 		</dependency>
 
 

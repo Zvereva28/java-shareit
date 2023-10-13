@@ -2,12 +2,16 @@ package ru.practicum.shareit;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.booking.exception.BookingException;
 import ru.practicum.shareit.booking.exception.BookingNotFoundException;
 import ru.practicum.shareit.item.exeption.ItemBookerException;
 import ru.practicum.shareit.item.exeption.ItemNotFoundException;
-import ru.practicum.shareit.user.exception.*;
+import ru.practicum.shareit.user.exception.EmailException;
+import ru.practicum.shareit.user.exception.UserException;
+import ru.practicum.shareit.user.exception.UserNotFoundException;
 
 @RestControllerAdvice
 public class ErrorHandler {

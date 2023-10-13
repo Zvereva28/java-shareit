@@ -10,18 +10,20 @@ import ru.practicum.shareit.booking.exception.BookingException;
 import ru.practicum.shareit.booking.exception.BookingNotFoundException;
 import ru.practicum.shareit.booking.mappers.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.storage.BookingRepository;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.item.storage.ItemRepository;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserRepository;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.shareit.booking.enums.BookingStatus.*;
+import static ru.practicum.shareit.booking.enums.BookingStatus.APPROVED;
+import static ru.practicum.shareit.booking.enums.BookingStatus.REJECTED;
+import static ru.practicum.shareit.booking.enums.BookingStatus.WAITING;
 
 @Slf4j
 @Service
@@ -51,7 +53,7 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(bookingDto));
         booking.setItem(item);
         booking.setBooker(user);
-        booking.setStatus("WAITING");
+        booking.setStatus(WAITING);
 
         log.info("Пользователь '{}' создал запрос на бронь вещи - '{}'", user, item);
         return BookingMapper.INSTANCE.toBookingReplyDto(booking);
@@ -67,12 +69,12 @@ public class BookingServiceImpl implements BookingService {
             throw new BookingNotFoundException(
                     String.format("Вещь id = %s не принадлежит user с id = %d", booking.getItem().getId(), userId));
         }
-        if (booking.getStatus().equals(WAITING.toString())) {
-            booking.setStatus(approved ? APPROVED.toString() : REJECTED.toString());
+        if (booking.getStatus().equals(WAITING)) {
+            booking.setStatus(approved ? APPROVED : REJECTED);
         } else {
             throw new BookingException("Статус брони не WAITING");
         }
-        log.info("Бронь с id - '{}' получила новый статус - '{}'", bookingId, booking.getStatus());
+        log.debug("Бронь с id - '{}' получила новый статус - '{}'", bookingId, booking.getStatus());
         return BookingMapper.INSTANCE.toBookingReplyDto(booking);
     }
 
@@ -84,7 +86,7 @@ public class BookingServiceImpl implements BookingService {
         if (userId != item.getUser().getId() && userId != booking.getBooker().getId()) {
             throw new BookingNotFoundException("У вас нет доступа к этой брони");
         }
-        log.info("Получена бронь '{}'", booking);
+        log.debug("Получена бронь '{}'", booking);
         return BookingMapper.INSTANCE.toBookingReplyDto(booking);
     }
 
@@ -99,7 +101,7 @@ public class BookingServiceImpl implements BookingService {
         }
         List<Booking> bookings = getBookingListByState(userId, status);
 
-        log.info("Получен список бронирований с параметром '{}' пользователя с id '{}'", state, userId);
+        log.debug("Получен список бронирований с параметром '{}' пользователя с id '{}'", state, userId);
         return bookings.stream()
                 .map(BookingMapper.INSTANCE::toBookingReplyDto)
                 .collect(Collectors.toList());
@@ -115,7 +117,7 @@ public class BookingServiceImpl implements BookingService {
             throw new BookingException(String.format("Unknown state: %s", state));
         }
         List<Booking> bookings = getBookingListForOwnerByState(userId, status);
-        log.info("Получен список бронирований вещей пользователя с id '{}' со статусом '{}' ", userId, state);
+        log.debug("Получен список бронирований вещей пользователя с id '{}' со статусом '{}' ", userId, state);
         return bookings.stream()
                 .map(BookingMapper.INSTANCE::toBookingReplyDto)
                 .collect(Collectors.toList());
@@ -134,7 +136,7 @@ public class BookingServiceImpl implements BookingService {
                 return bookingRepository.findAllByBookerIdAndDateBeforeAndDateAfter(userId);
             case WAITING:
             case REJECTED:
-                return bookingRepository.findAllByBookerIdAndStatusOrderByStartDateDesc(userId, state.toString());
+                return bookingRepository.findAllByBookerIdAndStatusOrderByStartDateDesc(userId, state);
             default:
                 throw new BookingException(String.format("Unknown state: %s", state));
         }
@@ -152,7 +154,7 @@ public class BookingServiceImpl implements BookingService {
                 return bookingRepository.findAllByOwnerIdAndDateBeforeAndDateAfter(userId);
             case WAITING:
             case REJECTED:
-                return bookingRepository.findAllByOwnerIdAndStatusOrderByStartDateDesc(userId, state.toString());
+                return bookingRepository.findAllByOwnerIdAndStatusOrderByStartDateDesc(userId, state);
             default:
                 throw new BookingException(String.format("Unknown state: %s", state));
         }
