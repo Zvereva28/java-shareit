@@ -2,6 +2,9 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.mappers.BookingMapper;
@@ -19,6 +22,8 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
@@ -39,6 +44,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository requestRepository;
 
 
     @Transactional
@@ -48,6 +54,10 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
         item.setUser(user);
         log.debug("Создана новая вещь - '{}'", item);
+        if (itemDto.getRequestId() != null) {
+            ItemRequest request = requestRepository.findById(itemDto.getRequestId()).orElseThrow();
+            item.setRequest(request);
+        }
 
         return ItemMapper.INSTANCE.toItemDto(item);
     }
@@ -93,10 +103,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getAllItems(long userId) {
+    public List<ItemDto> getAllItems(long userId, int from, int size) {
         ifUserExistReturnUser(userId);
-
-        final List<Item> items = itemRepository.findAllByUserIdOrderByIdAsc(userId);
+        Pageable pageable =
+                PageRequest.of(from, size);
+        final Page<Item> itemsPage = itemRepository.findAllByUserIdOrderByIdAsc(userId, pageable);
+        List<Item> items = itemsPage.getContent();
         List<ItemDto> itemsDto = new ArrayList<>();
 
         for (Item item : items) {
@@ -118,12 +130,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> searchItem(long userId, String searchText) {
+    public List<ItemDto> searchItem(long userId, String searchText, int from, int size) {
         if (searchText.isEmpty()) {
             log.debug("Не было найдено ни одного предмета по запросу '{}'", searchText);
             return Collections.emptyList();
         }
-        List<ItemDto> items = itemRepository.findByUserAndNameOrDescription(userId, searchText)
+        Pageable pageable = PageRequest.of(from, size);
+        final Page<Item> itemsPage = itemRepository.findByUserAndNameOrDescription(userId, searchText, pageable);
+        List<ItemDto> items = itemsPage
                 .stream()
                 .map(ItemMapper.INSTANCE::toItemDto)
                 .collect(Collectors.toList());

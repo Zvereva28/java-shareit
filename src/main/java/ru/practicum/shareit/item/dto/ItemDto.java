@@ -23,4 +23,6 @@ public class ItemDto {
     @NotBlank(message = "description не может быть пустым")
     private String description;
 
+    private Long requestId;
+
 }

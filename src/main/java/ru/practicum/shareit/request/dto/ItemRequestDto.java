@@ -1,18 +1,26 @@
 package ru.practicum.shareit.request.dto;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import ru.practicum.shareit.item.dto.ItemDto;
 
-import java.time.LocalDate;
+import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-@Data
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 public class ItemRequestDto {
-
-    private int id;
-
+    private Long id;
+    @NotBlank(message = "Поле description не может быть пустым")
     private String description;
-
-    private int requestor;
-
-    private LocalDate created;
+    private LocalDateTime created = LocalDateTime.now();
+    private List<ItemDto> items = new ArrayList<>();
 
 }
