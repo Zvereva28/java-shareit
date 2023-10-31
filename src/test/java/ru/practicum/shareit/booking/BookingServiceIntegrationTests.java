@@ -49,15 +49,15 @@ public class BookingServiceIntegrationTests {
     private final BookingServiceImpl bookingService;
     private final BookingRepository bookingRepository;
 
-    private ItemDto itemDto = new ItemDto();
+    private final ItemDto itemDto = new ItemDto();
 
     private UserDto userDto;
     private UserDto otherUserDto;
     private UserDto strangerDto;
 
-    private BookingDto bookingDto = new BookingDto();
-    private BookingDto lastBookingDto = new BookingDto();
-    private BookingDto nextBookingDto = new BookingDto();
+    private final BookingDto bookingDto = new BookingDto();
+    private final BookingDto lastBookingDto = new BookingDto();
+    private final BookingDto nextBookingDto = new BookingDto();
 
     @BeforeEach
     void setUp() {
