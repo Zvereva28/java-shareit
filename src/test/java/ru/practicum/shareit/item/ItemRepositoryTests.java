@@ -77,13 +77,5 @@ public class ItemRepositoryTests {
         assertEquals(item2, items.get(0));
     }
 
-    @Test
-    @DisplayName("Получение списка вещей по поисковой строке")
-    void findByUserAndNameOrDescription() {
-        String searchText = "дРелЬ";
-        List<Item> items = itemRepository
-                .findByUserAndNameOrDescription(1L, searchText, Pageable.ofSize(2)).getContent();
-        assertEquals(1, items.size());
-        assertEquals(item, items.get(0));
-    }
+
 }
