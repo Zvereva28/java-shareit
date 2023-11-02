@@ -14,9 +14,9 @@ public interface ItemService {
 
     ItemDto getItem(long id, long idUser);
 
-    List<ItemDto> getAllItems(long idUser);
+    List<ItemDto> getAllItems(long idUser, int from, int size);
 
-    List<ItemDto> searchItem(long id, String text);
+    List<ItemDto> searchItem(long id, String text, int from, int size);
 
     Item ifItemExistReturnItem(long itemId);
 
