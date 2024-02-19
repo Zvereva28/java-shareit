@@ -81,7 +81,6 @@ public class UserControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8))
                 .andExpect(status().isBadRequest());
-
         verify(userService, never()).addUser(userDtoWithBlankName);
     }
 
@@ -120,7 +119,7 @@ public class UserControllerTests {
     @Test
     @DisplayName("Получение пользователя")
     public void getUser() {
-        final Long userId = 0L;
+        final long userId = 0L;
 
         mockMvc.perform(get("/users/{userId}", userId))
                 .andDo(print())
