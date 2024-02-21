@@ -8,6 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.exception.EmailException;
+import ru.practicum.shareit.user.exception.UserException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -22,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -95,6 +98,33 @@ public class UserServiceTests {
         assertEquals(userDto.getName(), actualUser.getName(), "Имя пользователя не совпадает");
         assertEquals(userDto.getEmail(), actualUser.getEmail(), "Email пользователя не совпадает");
     }
+
+    @Test
+    @DisplayName("Обновление пользователя с уже существующим email")
+    void updateUser_whenEmailAlreadyExists_thenThrowException() {
+        UserDto userDto = new UserDto(1L, "User1", "user1@user.com");
+        userDto.setEmail("user@user.com");
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        doThrow(EmailException.class)
+                .when(userRepository).findByEmail(any());
+
+        final UserException e =
+                assertThrows(EmailException.class,
+                        () -> userService.updateUser(user.getId(), userDto));
+    }
+
+    @Test
+    @DisplayName("Обновление пользователя с несуществующим ID")
+    void updateUser_whenUserIdNotExists_thenThrowException() {
+        UserDto userDto = new UserDto(1L, "User1", "user1@user.com");
+        userDto.setName("NewName");
+        when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
+
+        final UserNotFoundException e =
+                assertThrows(UserNotFoundException.class, () -> userService.getUser(user.getId()));
+        assertEquals("Пользователя с id " + user.getId() + " нет в базе", e.getMessage());
+    }
+
 
     @Test
     @DisplayName("Получение всех пользователей")

@@ -11,6 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.exception.EmailException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -160,9 +162,76 @@ public class UserControllerTests {
 
     private UserDto makeUserDto(Long id, String name, String email) {
         UserDto dto = new UserDto(id, name, email);
-
-
         return dto;
     }
 
+    @SneakyThrows
+    @Test
+    @DisplayName("Обновление пользователя - только имя")
+    public void updateUser_whenUserOnlyName_thenUserUpdated() {
+        final Long userId = 1L;
+        userDto.setName("updateName");
+        UserDto updatedUser = makeUserDto(userId, userDto.getName(), userDto.getEmail());
+        when(userService.updateUser(anyLong(), any())).thenReturn(updatedUser);
+        mockMvc.perform(patch("/users/{userId}", userId)
+                        .content(objectMapper.writeValueAsString(updatedUser))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(userId), Long.class))
+                .andExpect(jsonPath("$.name", is(updatedUser.getName())))
+                .andExpect(jsonPath("$.email", is(updatedUser.getEmail())));
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Обновление пользователя - только email")
+    public void updateUser_whenUserOnlyEmail_thenUserUpdated() {
+        final Long userId = 1L;
+        userDto.setEmail("update@user.com");
+        UserDto updatedUser = makeUserDto(userId, userDto.getName(), userDto.getEmail());
+        when(userService.updateUser(anyLong(), any())).thenReturn(updatedUser);
+        mockMvc.perform(patch("/users/{userId}", userId)
+                        .content(objectMapper.writeValueAsString(updatedUser))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(userId), Long.class))
+                .andExpect(jsonPath("$.name", is(updatedUser.getName())))
+                .andExpect(jsonPath("$.email", is(updatedUser.getEmail())));
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Обновление пользователя с такой же почтой")
+    public void updateUser_whenUserWithSameEmail_thenUserUpdated() {
+        final Long userId = 1L;
+        userDto.setName("updateName");
+        userDto.setEmail("user@user.com");
+        UserDto updatedUser = makeUserDto(userId, userDto.getName(), userDto.getEmail());
+
+        when(userService.updateUser(anyLong(), any())).thenReturn(updatedUser);
+
+        mockMvc.perform(patch("/users/{userId}", userId)
+                        .content(objectMapper.writeValueAsString(updatedUser))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(userId), Long.class))
+                .andExpect(jsonPath("$.name", is(updatedUser.getName())))
+                .andExpect(jsonPath("$.email", is(updatedUser.getEmail())));
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Обновление пользователя с уже занятой почтой")
+    public void updateUser_whenUserWithExistEmail_thenUserEmailAlreadyExistExceptionTrows() {
+        final Long userId = 1L;
+        UserDto updatedUser = makeUserDto(userId, userDto.getName(), userDto.getEmail());
+
+        when(userService.updateUser(anyLong(), any())).thenThrow(EmailException.class);
+
+        mockMvc.perform(patch("/users/{userId}", userId)
+                        .content(objectMapper.writeValueAsString(updatedUser))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict());
+
+    }
 }
