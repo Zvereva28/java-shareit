@@ -300,8 +300,8 @@ public class BookingServiceIntegrationTests {
         booking.setBooker(otherUser);
         booking.setStatus(WAITING);
         List<Booking> bookings = List.of(booking);
-        List<BookingDto> bookingDtoList = bookingService.
-                getUserAllBooking(otherUser.getId(), "CURRENT", 0, 10);
+        List<BookingDto> bookingDtoList = bookingService
+                .getUserAllBooking(otherUser.getId(), "CURRENT", 0, 10);
         assertEquals(bookings.size(), bookingDtoList.size());
     }
 
@@ -317,8 +317,8 @@ public class BookingServiceIntegrationTests {
         booking.setBooker(otherUser);
         booking.setStatus(WAITING);
         List<Booking> bookings = List.of(booking);
-        List<BookingDto> bookingDtoList = bookingService.
-                getUserAllBooking(otherUser.getId(), "WAITING", 0, 10);
+        List<BookingDto> bookingDtoList = bookingService
+                .getUserAllBooking(otherUser.getId(), "WAITING", 0, 10);
         assertEquals(bookings.size(), bookingDtoList.size());
     }
 
@@ -334,8 +334,8 @@ public class BookingServiceIntegrationTests {
         booking.setBooker(otherUser);
         booking.setStatus(WAITING);
         List<Booking> bookings = List.of(booking);
-        List<BookingDto> bookingDtoList = bookingService.
-                getAllBookingByOwner(user.getId(), "ALL", 0, 10);
+        List<BookingDto> bookingDtoList = bookingService
+                .getAllBookingByOwner(user.getId(), "ALL", 0, 10);
         assertEquals(bookings.size(), bookingDtoList.size());
     }
 
@@ -528,8 +528,8 @@ public class BookingServiceIntegrationTests {
         booking.setStatus(WAITING);
         List<Booking> bookings = List.of(booking);
 
-        List<BookingDto> bookingDtoList = bookingService.
-                getAllBookingByOwner(user.getId(), "FUTURE", 0, 10);
+        List<BookingDto> bookingDtoList = bookingService
+                .getAllBookingByOwner(user.getId(), "FUTURE", 0, 10);
 
         assertEquals(bookings.size(), bookingDtoList.size());
     }
