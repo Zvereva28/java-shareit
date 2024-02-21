@@ -237,7 +237,6 @@ public class BookingControllerTests {
         verify(bookingService, never()).getAllBookingByOwner(userId, state, from, size);
     }
 
-
     @SneakyThrows
     @Test
     @DisplayName("Получение списка всех бронирований с некорректным параметром size")
@@ -256,6 +255,4 @@ public class BookingControllerTests {
 
         verify(bookingService, never()).getUserAllBooking(userId, state, from, size);
     }
-
-
 }
