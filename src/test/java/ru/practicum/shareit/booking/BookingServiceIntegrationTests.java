@@ -50,14 +50,12 @@ public class BookingServiceIntegrationTests {
     private final BookingRepository bookingRepository;
 
     private final ItemDto itemDto = new ItemDto();
-
-    private UserDto userDto;
-    private UserDto otherUserDto;
-    private UserDto strangerDto;
-
     private final BookingDto bookingDto = new BookingDto();
     private final BookingDto lastBookingDto = new BookingDto();
     private final BookingDto nextBookingDto = new BookingDto();
+    private UserDto userDto;
+    private UserDto otherUserDto;
+    private UserDto strangerDto;
 
     @BeforeEach
     void setUp() {
@@ -243,8 +241,8 @@ public class BookingServiceIntegrationTests {
         booking.setBooker(otherUser);
         booking.setStatus(WAITING);
         List<Booking> bookings = List.of(booking);
-        List<BookingDto> bookingDtoList = bookingService.
-                getUserAllBooking(otherUser.getId(), "ALL", 0, 10);
+        List<BookingDto> bookingDtoList = bookingService
+                .getUserAllBooking(otherUser.getId(), "ALL", 0, 10);
         assertEquals(bookings.size(), bookingDtoList.size());
     }
 
@@ -268,8 +266,8 @@ public class BookingServiceIntegrationTests {
         booking.setBooker(otherUser);
         booking.setStatus(WAITING);
         List<Booking> bookings = List.of(booking);
-        List<BookingDto> bookingDtoList = bookingService.
-                getUserAllBooking(otherUser.getId(), "PAST", 0, 10);
+        List<BookingDto> bookingDtoList = bookingService
+                .getUserAllBooking(otherUser.getId(), "PAST", 0, 10);
         assertEquals(bookings.size(), bookingDtoList.size());
     }
 
@@ -285,8 +283,8 @@ public class BookingServiceIntegrationTests {
         booking.setBooker(otherUser);
         booking.setStatus(WAITING);
         List<Booking> bookings = List.of(booking);
-        List<BookingDto> bookingDtoList = bookingService.
-                getUserAllBooking(otherUser.getId(), "FUTURE", 0, 10);
+        List<BookingDto> bookingDtoList = bookingService
+                .getUserAllBooking(otherUser.getId(), "FUTURE", 0, 10);
         assertEquals(bookings.size(), bookingDtoList.size());
     }
 
@@ -512,8 +510,8 @@ public class BookingServiceIntegrationTests {
         booking.setBooker(otherUser);
         booking.setStatus(WAITING);
         List<Booking> bookings = List.of(booking);
-        List<BookingDto> bookingDtoList = bookingService.
-                getAllBookingByOwner(user.getId(), "PAST", 0, 10);
+        List<BookingDto> bookingDtoList = bookingService
+                .getAllBookingByOwner(user.getId(), "PAST", 0, 10);
         assertEquals(bookings.size(), bookingDtoList.size());
     }
 
@@ -549,8 +547,8 @@ public class BookingServiceIntegrationTests {
         booking.setStatus(WAITING);
         List<Booking> bookings = List.of(booking);
 
-        List<BookingDto> bookingDtoList = bookingService.
-                getAllBookingByOwner(user.getId(), "CURRENT", 0, 10);
+        List<BookingDto> bookingDtoList = bookingService
+                .getAllBookingByOwner(user.getId(), "CURRENT", 0, 10);
 
         assertEquals(bookings.size(), bookingDtoList.size());
     }
@@ -567,8 +565,8 @@ public class BookingServiceIntegrationTests {
         booking.setBooker(otherUser);
         booking.setStatus(WAITING);
         List<Booking> bookings = List.of(booking);
-        List<BookingDto> bookingDtoList = bookingService.
-                getAllBookingByOwner(user.getId(), "WAITING", 0, 10);
+        List<BookingDto> bookingDtoList = bookingService
+                .getAllBookingByOwner(user.getId(), "WAITING", 0, 10);
         assertEquals(bookings.size(), bookingDtoList.size());
     }
 
@@ -589,8 +587,8 @@ public class BookingServiceIntegrationTests {
         lastBooking.setBooker(otherUser);
         nextBooking.setBooker(otherUser);
 
-        List<BookingDto> bookingDtoList = bookingService.
-                getAllBookingByOwner(user.getId(), "ALL", 2, 1);
+        List<BookingDto> bookingDtoList = bookingService
+                .getAllBookingByOwner(user.getId(), "ALL", 2, 1);
 
         assertEquals(1, bookingDtoList.size());
     }
