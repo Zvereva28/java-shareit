@@ -345,6 +345,156 @@ public class BookingServiceIntegrationTests {
     }
 
     @Test
+    @DisplayName("Получение списка всех бронирований пользователя")
+    void getUserAllBooking_whenUserExists_thenBookingsReturned() {
+        String state = "ALL";
+        int from = 0;
+        int size = 10;
+        User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
+        User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
+        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        item.setUser(user);
+        Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(bookingDto));
+        booking.setItem(item);
+        booking.setBooker(otherUser);
+        booking.setStatus(WAITING);
+        List<Booking> bookings = List.of(booking);
+
+        List<BookingDto> bookingDtoList = bookingService.getUserAllBooking(otherUser.getId(), state, from, size);
+
+        assertEquals(bookings.size(), bookingDtoList.size());
+    }
+
+    @Test
+    @DisplayName("Получение списка бронирований вледельцем вещи c неизвестным параметром")
+    void getAllBookingByOwner_whenStateUnknown_thenException() {
+        String state = "UNKNOWN";
+        int from = 0;
+        int size = 10;
+        User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
+
+        assertThrows(BookingException.class,
+                () -> bookingService.getAllBookingByOwner(user.getId(), state, from, size));
+    }
+
+    @Test
+    @DisplayName("Получение списка бронирований c неизвестным параметром")
+    void getUserAllBooking_whenStateUnknown_thenException() {
+        String state = "UNKNOWN";
+        int from = 0;
+        int size = 10;
+        User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
+
+        assertThrows(BookingException.class,
+                () -> bookingService.getUserAllBooking(otherUser.getId(), state, from, size));
+    }
+
+    @Test
+    @DisplayName("Получение списка всех бронирований с параметром без брони")
+    void getUserAllBooking_whenStateIsPast_thenBookingsReturned() {
+        String state = "PAST";
+        int from = 0;
+        int size = 10;
+        User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
+        User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
+        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        item.setUser(user);
+        Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(lastBookingDto));
+        booking.setItem(item);
+        booking.setBooker(otherUser);
+        booking.setStatus(WAITING);
+        List<Booking> bookings = List.of(booking);
+
+        List<BookingDto> bookingDtoList = bookingService.getUserAllBooking(otherUser.getId(), state, from, size);
+
+        assertEquals(bookings.size(), bookingDtoList.size());
+    }
+
+    @Test
+    @DisplayName("Получение списка всех бронирований с параметром без брони")
+    void getUserAllBooking_whenStateIsFuture_thenBookingsReturned() {
+        String state = "FUTURE";
+        int from = 0;
+        int size = 10;
+        User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
+        User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
+        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        item.setUser(user);
+        Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(nextBookingDto));
+        booking.setItem(item);
+        booking.setBooker(otherUser);
+        booking.setStatus(WAITING);
+        List<Booking> bookings = List.of(booking);
+
+        List<BookingDto> bookingDtoList = bookingService.getUserAllBooking(otherUser.getId(), state, from, size);
+
+        assertEquals(bookings.size(), bookingDtoList.size());
+    }
+
+    @Test
+    @DisplayName("Получение списка всех бронирований с параметром без брони")
+    void getUserAllBooking_whenStateIsCurrent_thenBookingsReturned() {
+        String state = "CURRENT";
+        int from = 0;
+        int size = 10;
+        User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
+        User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
+        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        item.setUser(user);
+        Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(bookingDto));
+        booking.setItem(item);
+        booking.setBooker(otherUser);
+        booking.setStatus(WAITING);
+        List<Booking> bookings = List.of(booking);
+
+        List<BookingDto> bookingDtoList = bookingService.getUserAllBooking(otherUser.getId(), state, from, size);
+
+        assertEquals(bookings.size(), bookingDtoList.size());
+    }
+
+    @Test
+    @DisplayName("Получение списка всех бронирований с параметром без брони")
+    void getUserAllBooking_whenStateIsWaiting_thenBookingsReturned() {
+        String state = "WAITING";
+        int from = 0;
+        int size = 10;
+        User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
+        User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
+        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        item.setUser(user);
+        Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(bookingDto));
+        booking.setItem(item);
+        booking.setBooker(otherUser);
+        booking.setStatus(WAITING);
+        List<Booking> bookings = List.of(booking);
+
+        List<BookingDto> bookingDtoList = bookingService.getUserAllBooking(otherUser.getId(), state, from, size);
+
+        assertEquals(bookings.size(), bookingDtoList.size());
+    }
+
+    @Test
+    @DisplayName("Получение списка всех бронирований вледельцем вещи")
+    void getAllBookingByOwner_whenUserExists_thenBookingsReturned() {
+        String state = "ALL";
+        int from = 0;
+        int size = 10;
+        User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
+        User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
+        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        item.setUser(user);
+        Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(bookingDto));
+        booking.setItem(item);
+        booking.setBooker(otherUser);
+        booking.setStatus(WAITING);
+        List<Booking> bookings = List.of(booking);
+
+        List<BookingDto> bookingDtoList = bookingService.getAllBookingByOwner(user.getId(), state, from, size);
+
+        assertEquals(bookings.size(), bookingDtoList.size());
+    }
+
+    @Test
     @DisplayName("Получение списка всех бронирований вледельцем вещи с параметром без брони")
     void getAllBookingByOwnerStateIsPastBookingsReturned() {
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));

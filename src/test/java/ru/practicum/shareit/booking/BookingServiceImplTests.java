@@ -7,11 +7,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingReplyDto;
+import ru.practicum.shareit.booking.exception.BookingException;
 import ru.practicum.shareit.booking.exception.BookingNotFoundException;
 import ru.practicum.shareit.booking.mappers.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
@@ -255,6 +257,20 @@ public class BookingServiceImplTests {
         when(userRepository.findById(userDto.getId())).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class,
+                () -> bookingService.getAllBookingByOwner(userDto.getId(), state, from, size));
+    }
+
+    @Test
+    @DisplayName("Получение списка бронирований c неизвестным параметром")
+    void getAllBookingByOwner_whenStateUnknown_thenException() {
+        String state = "SOMETHING";
+        int from = 0;
+        int size = 10;
+        User user = UserMapper.INSTANCE.toUser(userDto);
+
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+
+        assertThrows(BookingException.class,
                 () -> bookingService.getAllBookingByOwner(userDto.getId(), state, from, size));
     }
 }

@@ -180,5 +180,82 @@ public class BookingControllerTests {
         verify(bookingService).getAllBookingByOwner(anyLong(), anyString(), anyInt(), anyInt());
     }
 
+    @SneakyThrows
+    @Test
+    @DisplayName("Получение списка всех бронирований владельцем вещи с некорректным параметром size")
+    void getAllBookingByOwner_whenParamSizeMaxInvalid_thenException() {
+        long userId = 1L;
+        String state = "ALL";
+        int from = 0;
+        int size = 999;
+
+        mockMvc.perform(get("/bookings/owner")
+                        .header("X-Sharer-User-Id", userId)
+                        .content(objectMapper.writeValueAsString(bookingDto))
+                        .param("size", String.valueOf(size))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+
+        verify(bookingService, never()).getAllBookingByOwner(userId, state, from, size);
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Получение списка всех бронирований владельцем вещи с некорректным параметром size")
+    void getAllBookingByOwner_whenParamSizeMinInvalid_thenException() {
+        long userId = 1L;
+        String state = "ALL";
+        int from = 0;
+        int size = 0;
+
+        mockMvc.perform(get("/bookings/owner")
+                        .header("X-Sharer-User-Id", userId)
+                        .content(objectMapper.writeValueAsString(bookingDto))
+                        .param("size", String.valueOf(size))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+
+        verify(bookingService, never()).getAllBookingByOwner(userId, state, from, size);
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Получение списка всех бронирований владельцем вещи с некорректным параметром from")
+    void getAllBookingByOwner_whenParamFromInvalid_thenException() {
+        long userId = 1L;
+        String state = "ALL";
+        int from = -1;
+        int size = 10;
+
+        mockMvc.perform(get("/bookings/owner")
+                        .header("X-Sharer-User-Id", userId)
+                        .content(objectMapper.writeValueAsString(bookingDto))
+                        .param("from", String.valueOf(from))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+
+        verify(bookingService, never()).getAllBookingByOwner(userId, state, from, size);
+    }
+
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Получение списка всех бронирований с некорректным параметром size")
+    void getUserAllBooking_whenParamSizeMaxInvalid_thenException() {
+        long userId = 1L;
+        String state = "ALL";
+        int from = 0;
+        int size = 999;
+
+        mockMvc.perform(get("/bookings")
+                        .header("X-Sharer-User-Id", userId)
+                        .content(objectMapper.writeValueAsString(bookingDto))
+                        .param("size", String.valueOf(size))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+
+        verify(bookingService, never()).getUserAllBooking(userId, state, from, size);
+    }
+
 
 }
