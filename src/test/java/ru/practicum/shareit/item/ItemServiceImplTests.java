@@ -15,6 +15,7 @@ import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemOwnerDto;
+import ru.practicum.shareit.item.exeption.ItemBookerException;
 import ru.practicum.shareit.item.exeption.ItemException;
 import ru.practicum.shareit.item.exeption.ItemNotFoundException;
 import ru.practicum.shareit.item.mappers.CommentMapper;
@@ -391,5 +392,25 @@ class ItemServiceImplTests {
         assertThatThrownBy(() -> itemService.postComment(userId, itemId, commentDto))
                 .isInstanceOf(ItemNotFoundException.class)
                 .hasMessageContaining(String.format("Вещи с id %d нет в базе", itemId));
+    }
+
+    @Test
+    @DisplayName("Публикация комментария пользователем, который не арендовал вещь")
+    void postComment_whenUserIsNotBooker_thenThrowItemBookerException() {
+        long userId = 1L;
+        long itemId = 2L;
+        Item item = ItemMapper.INSTANCE.toItem(itemDto);
+        User user = UserMapper.INSTANCE.toUser(userDto);
+        user.setId(userId);
+        item.setId(itemId);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(bookingRepository.findAllByItemIdAndBookerId(itemId, userId)).thenReturn(Collections.emptyList());
+
+        assertThatThrownBy(() -> itemService.postComment(userId, itemId, commentDto))
+                .isInstanceOf(ItemBookerException.class)
+                .hasMessageContaining(
+                        String.format("Вещь с id %d не была арендована пользователем с id %d", itemId, userId));
     }
 }

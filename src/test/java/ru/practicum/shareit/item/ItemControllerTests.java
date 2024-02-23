@@ -5,16 +5,19 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.exeption.ItemNotFoundException;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.ValidationException;
+import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -180,4 +183,64 @@ public class ItemControllerTests {
 
         return dto;
     }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Получение списка вещей пользователея")
+    public void getAllUserItems() {
+        long userId = 1L;
+        int from = 0;
+        int size = 20;
+        when(itemService.getAllItems(userId, from, size))
+                .thenReturn(List.of(itemDto));
+
+        mockMvc.perform(get("/items")
+                        .header("X-Sharer-User-Id", userId)
+                        .content(objectMapper.writeValueAsString(itemDto))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print());
+
+        verify(itemService).getAllItems(userId, from, size);
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Поиск вещей по запросу")
+    void searchItems_whenTextIsProvided_thenItemsReturned() {
+        long userId = 1L;
+        String searchText = "серП";
+
+        when(itemService.searchItem(userId, searchText, 0, 20)).thenReturn(List.of(itemDto));
+
+        mockMvc.perform(get("/items/search")
+                        .header("X-Sharer-User-Id", userId)
+                        .param("text", searchText)
+                        .content(objectMapper.writeValueAsString(itemDto))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        verify(itemService).searchItem(userId, searchText, 0, 20);
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Добавление комментария пользователем")
+    void postComment_whenUserExists_thenCommentAdded() {
+        long userId = 1L;
+        long itemId = 2L;
+        CommentDto commentDto = new CommentDto();
+        commentDto.setText("Отзыв о товаре");
+
+        Mockito.when(itemService.postComment(anyLong(), anyLong(), any(CommentDto.class)))
+                .thenReturn(commentDto);
+
+        mockMvc.perform(post("/items/{itemId}/comment", itemId)
+                        .header("X-Sharer-User-Id", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(commentDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.text", is(commentDto.getText())));
+    }
+
 }
