@@ -63,7 +63,7 @@ public class ItemRequestServiceIntegrationTests {
 
     @Test
     @DisplayName("Создание запроса на аренду")
-    void createItemRequest_whenUserExists_thenItemRequestCreated() {
+    void createItemRequestUserExistsItemRequestCreated() {
         User requestor = userRepository.save(UserMapper.INSTANCE.toUser(requestorDto));
 
         ItemRequestDto actualRequestDto = requestService.createItemRequest(requestor.getId(), requestDto);
@@ -74,7 +74,7 @@ public class ItemRequestServiceIntegrationTests {
 
     @Test
     @DisplayName("Создание запроса на аренду, когда пользователя не существует")
-    void createItemRequest_whenUserDoesNotExist_thenException() {
+    void createItemRequestUserDoesNotExistException() {
 
         assertThrows(UserNotFoundException.class,
                 () -> requestService.createItemRequest(1L, requestDto));
@@ -82,7 +82,7 @@ public class ItemRequestServiceIntegrationTests {
 
     @Test
     @DisplayName("Получение списка всех запросов пользователя")
-    void getAllUserItemsRequests_whenUserExists_thenItemRequestsReturned() {
+    void getAllUserItemsRequestsUserExistsItemRequestsReturned() {
         User requestor = userRepository.save(UserMapper.INSTANCE.toUser(requestorDto));
         ItemRequest request = requestRepository.save(ItemRequestMapper.INSTANCE.toItemRequest(requestDto));
         request.setRequestor(requestor);
@@ -98,7 +98,7 @@ public class ItemRequestServiceIntegrationTests {
 
     @Test
     @DisplayName("Получение списка запросов, когда пользователя не существует")
-    void getAllUserItemsRequests_whenUserDoesNotExist_thenException() {
+    void getAllUserItemsRequestsUserDoesNotExistException() {
 
         assertThrows(UserNotFoundException.class,
                 () -> requestService.getAllUserItemsRequests(1L));
@@ -106,7 +106,7 @@ public class ItemRequestServiceIntegrationTests {
 
     @Test
     @DisplayName("Получение списка всех запросов")
-    void getAllItems_whenUserExists_thenItemRequestsReturned() {
+    void getAllItemsUserExistsItemRequestsReturned() {
         int from = 0;
         int size = 10;
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
@@ -125,7 +125,7 @@ public class ItemRequestServiceIntegrationTests {
 
     @Test
     @DisplayName("Получение списка запросов, когда пользователя не существует")
-    void getAllItems_whenUserDoesNotExist_thenException() {
+    void getAllItemsUserDoesNotExistException() {
         int from = 0;
         int size = 10;
 
@@ -135,7 +135,7 @@ public class ItemRequestServiceIntegrationTests {
 
     @Test
     @DisplayName("Получение запроса")
-    void getItemRequest_whenUserExistsAndRequestIdExists_thenItemRequestReturned() {
+    void getItemRequestUserExistsAndRequestIdExistsItemRequestReturned() {
         User requestor = userRepository.save(UserMapper.INSTANCE.toUser(requestorDto));
         ItemRequest request = requestRepository.save(ItemRequestMapper.INSTANCE.toItemRequest(requestDto));
         request.setRequestor(requestor);
@@ -150,7 +150,7 @@ public class ItemRequestServiceIntegrationTests {
 
     @Test
     @DisplayName("Получение запроса, когда пользователя не существует")
-    void getItemRequest_whenUserDoesNotExist_thenException() {
+    void getItemRequestUserDoesNotExisException() {
 
         assertThrows(UserNotFoundException.class,
                 () -> requestService.getItemRequest(1L, 1L));
@@ -158,7 +158,7 @@ public class ItemRequestServiceIntegrationTests {
 
     @Test
     @DisplayName("Получение запроса, когда запроса не существует")
-    void getItemRequest_whenRequestIdDoesNotExist_thenException() {
+    void getItemRequestRequestIdDoesNotExistException() {
         User requestor = userRepository.save(UserMapper.INSTANCE.toUser(requestorDto));
 
         assertThrows(ItemNotFoundException.class,

@@ -81,7 +81,7 @@ public class BookingServiceIntegrationTests {
 
     @Test
     @DisplayName("Создание бронирования")
-    void createBooking_whenBookingDataValid_thenBookingCreated() {
+    void createBookingBookingDataValidBookingCreated() {
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
         Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
@@ -96,7 +96,7 @@ public class BookingServiceIntegrationTests {
 
     @Test
     @DisplayName("Создание бронирования когда дата окончания не валидна")
-    void createBooking_whenEndDateNotValid_thenException() {
+    void createBookingEndDateNotValidException() {
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
         Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
@@ -108,7 +108,7 @@ public class BookingServiceIntegrationTests {
 
     @Test
     @DisplayName("Создание бронирования на вещь, которая принадлежит пользователю")
-    void createBooking_whenBookedItemBelongToUser_thenNotFoundException() {
+    void createBookingBookedItemBelongToUserNotFoundException() {
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
         item.setUser(user);
@@ -118,7 +118,7 @@ public class BookingServiceIntegrationTests {
 
     @Test
     @DisplayName("Создание бронирования на несуществующую вещь")
-    void createBooking_whenBookedItemNotExist_thenItemNotFoundException() {
+    void createBookingBookedItemNotExistItemNotFoundException() {
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
 
         assertThrows(ItemNotFoundException.class,
@@ -220,7 +220,7 @@ public class BookingServiceIntegrationTests {
 
     @Test
     @DisplayName("Получение брони - пользователя не существует")
-    void getBooking_whenUserNotExists_thenException() {
+    void getBookingUserNotExistsException() {
         Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(bookingDto));
         Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
         item.setUser(UserMapper.INSTANCE.toUser(otherUserDto));
@@ -350,7 +350,7 @@ public class BookingServiceIntegrationTests {
 
     @Test
     @DisplayName("Получение списка всех бронирований пользователя")
-    void getUserAllBooking_whenUserExists_thenBookingsReturned() {
+    void getUserAllBookingUserExistsBookingsReturned() {
         String state = "ALL";
         int from = 0;
         int size = 10;
@@ -371,7 +371,7 @@ public class BookingServiceIntegrationTests {
 
     @Test
     @DisplayName("Получение списка бронирований вледельцем вещи c неизвестным параметром")
-    void getAllBookingByOwner_whenStateUnknown_thenException() {
+    void getAllBookingByOwnerStateUnknownWithException() {
         String state = "UNKNOWN";
         int from = 0;
         int size = 10;
@@ -383,7 +383,7 @@ public class BookingServiceIntegrationTests {
 
     @Test
     @DisplayName("Получение списка бронирований c неизвестным параметром")
-    void getUserAllBooking_whenStateUnknown_thenException() {
+    void getUserAllBookingStateUnknownException() {
         String state = "UNKNOWN";
         int from = 0;
         int size = 10;
@@ -395,7 +395,7 @@ public class BookingServiceIntegrationTests {
 
     @Test
     @DisplayName("Получение списка всех бронирований с параметром без брони")
-    void getUserAllBooking_whenStateIsPast_thenBookingsReturned() {
+    void getUserAllBookingStateIsPastBookingsReturned() {
         String state = "PAST";
         int from = 0;
         int size = 10;
@@ -416,7 +416,7 @@ public class BookingServiceIntegrationTests {
 
     @Test
     @DisplayName("Получение списка всех бронирований с параметром без брони")
-    void getUserAllBooking_whenStateIsFuture_thenBookingsReturned() {
+    void getUserAllBookingStateIsFutureBookingsParamReturned() {
         String state = "FUTURE";
         int from = 0;
         int size = 10;
@@ -437,7 +437,7 @@ public class BookingServiceIntegrationTests {
 
     @Test
     @DisplayName("Получение списка всех бронирований с параметром без брони")
-    void getUserAllBooking_whenStateIsCurrent_thenBookingsReturned() {
+    void getUserAllBookingStateIsCurrentBookingsAllReturned() {
         String state = "CURRENT";
         int from = 0;
         int size = 10;
@@ -458,7 +458,7 @@ public class BookingServiceIntegrationTests {
 
     @Test
     @DisplayName("Получение списка всех бронирований с параметром без брони")
-    void getUserAllBooking_whenStateIsWaiting_thenBookingsReturned() {
+    void getUserAllBookingStateIsWaitingBookingsOutReturned() {
         String state = "WAITING";
         int from = 0;
         int size = 10;
@@ -479,7 +479,7 @@ public class BookingServiceIntegrationTests {
 
     @Test
     @DisplayName("Получение списка всех бронирований вледельцем вещи")
-    void getAllBookingByOwner_whenUserExists_thenBookingsReturned() {
+    void getAllBookingByOwnerUserExistBookingsReturned() {
         String state = "ALL";
         int from = 0;
         int size = 10;

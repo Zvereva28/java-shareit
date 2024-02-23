@@ -137,7 +137,7 @@ class ItemServiceImplTests {
 
     @Test
     @DisplayName("Обновление вещи, если пользователя не существует")
-    void updateItem_whenUserNotExist_thenReturnUserNotFoundException() {
+    void updateItemUserNotExistReturnUserNotFoundException() {
         long userId = 1L;
         long itemId = 1L;
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
@@ -149,7 +149,7 @@ class ItemServiceImplTests {
 
     @Test
     @DisplayName("Обновление вещи, если вещи не существует")
-    void updateItem_whenItemNotExist_thenReturnItemNotFoundException() {
+    void updateItemItemNotExistReturnItemNotFoundException() {
         User user = UserMapper.INSTANCE.toUser(userDto);
         user.setId(1L);
         long itemId = 1L;
@@ -163,7 +163,7 @@ class ItemServiceImplTests {
 
     @Test
     @DisplayName("Обновление вещи с id другого пользователя")
-    void updateItem_whenUserNotItemOwner_thenReturnItemOwnerException() {
+    void updateItemUserNotItemOwnerReturnItemOwnerException() {
         Item item = ItemMapper.INSTANCE.toItem(itemDto);
         User user = UserMapper.INSTANCE.toUser(userDto);
         User otherUser = UserMapper.INSTANCE.toUser(otherUserDto);
@@ -182,7 +182,7 @@ class ItemServiceImplTests {
 
     @Test
     @DisplayName("Получение вещи пользователем, не являющимся владельцем")
-    void getItem_whenUserNotOwner_thenReturnItemDto() {
+    void getItemserNotOwnerReturnItemDto() {
         Item item = ItemMapper.INSTANCE.toItem(itemDto);
         item.setId(1L);
         item.setUser(new User(1L, "User", "user@user.ru"));
@@ -209,7 +209,7 @@ class ItemServiceImplTests {
 
     @Test
     @DisplayName("Получение вещи пользователем, являющимся владельцем")
-    public void getItem_whenUserIdItemOwner_thenReturnItemOwnerDtoWithBookings() {
+    public void getItemUserIdItemOwnerReturnItemOwnerDtoWithBookings() {
         long itemId = 1L;
         long userId = 1L;
         Item item = ItemMapper.INSTANCE.toItem(itemDto);
@@ -303,7 +303,7 @@ class ItemServiceImplTests {
 
     @Test
     @DisplayName("Поиск вещей по пустой строке")
-    void searchItems_whenSearchTextEmpty_thenReturnEmptyList() {
+    void searchItemsSearchTextEmptyReturnEmptyList() {
         long userId = 1L;
         String searchText = "";
         Integer from = 1;
@@ -317,7 +317,7 @@ class ItemServiceImplTests {
 
     @Test
     @DisplayName("Поиск вещей по запросу")
-    void searchItems_whenSearchTextNotEmpty_thenReturnItemDtoList() {
+    void searchItemsSearchTextNotEmptyReturnItemDtoList() {
         long userId = 1L;
         String searchText = "дРелЬ";
         int from = 1;
@@ -345,7 +345,7 @@ class ItemServiceImplTests {
 
     @Test
     @DisplayName("Публикация комментария пользователем, который арендовал вещь")
-    void postComment_whenUserIsBooker_thenReturnCommentDto() {
+    void postCommentUserIsBookerReturnCommentDto() {
         Item item = ItemMapper.INSTANCE.toItem(itemDto);
         User user = UserMapper.INSTANCE.toUser(userDto);
         user.setId(1L);
@@ -380,7 +380,7 @@ class ItemServiceImplTests {
 
     @Test
     @DisplayName("Публикация комментария на несуществующую вещь")
-    void postComment_whenItemDoesNotExist_thenThrowNotFoundException() {
+    void postCommentItemDoesException() {
         long userId = 1L;
         long itemId = 2L;
         User user = UserMapper.INSTANCE.toUser(userDto);
@@ -396,7 +396,7 @@ class ItemServiceImplTests {
 
     @Test
     @DisplayName("Публикация комментария пользователем, который не арендовал вещь")
-    void postComment_whenUserIsNotBooker_thenThrowItemBookerException() {
+    void postCommentUserIsNotBookerException() {
         long userId = 1L;
         long itemId = 2L;
         Item item = ItemMapper.INSTANCE.toItem(itemDto);

@@ -124,7 +124,7 @@ public class ItemRequestControllerTest {
     @SneakyThrows
     @Test
     @DisplayName("Получение списка запросов с некорректным параметром size")
-    void getAllItems_whenParamSizeMaxInvalid_thenItemRequestsReturned() {
+    void getAllItemsParamSizeMaxInvalidItemRequestsReturned() {
         int from = 0;
         int size = 999;
         long userId = 1L;
@@ -143,7 +143,7 @@ public class ItemRequestControllerTest {
     @SneakyThrows
     @Test
     @DisplayName("Получение списка запросов с некорректным параметром from")
-    void getAllItems_whenParamFromInvalid_thenItemRequestsReturned() {
+    void getAllItemsParamFromInvalidItemRequestsReturned() {
         int from = -1;
         int size = 10;
         long userId = 1L;
@@ -162,7 +162,7 @@ public class ItemRequestControllerTest {
     @SneakyThrows
     @Test
     @DisplayName("Получение списка запросов с некорректным параметром size")
-    void getAllItems_whenParamSizeMinInvalid_thenItemRequestsReturned() {
+    void getAllItemsParamSizeMinInvalidItemRequestsReturned() {
         int from = 0;
         int size = 0;
         long userId = 1L;
@@ -202,7 +202,7 @@ public class ItemRequestControllerTest {
     @SneakyThrows
     @Test
     @DisplayName("Получение списка всех запросов пользователя")
-    public void getAllUserItems_whenUserExists_thenItemsReturned() {
+    public void getAllUserItemsUserExistsItemsReturned() {
         long userId = 1L;
         when(requestService.getAllUserItemsRequests(userId)).thenReturn(List.of(requestDto));
 

@@ -61,7 +61,7 @@ public class ItemRequestServiceImplTests {
 
     @Test
     @DisplayName("Создание запроса на аренду")
-    void createItemRequest_whenUserExists_thenItemRequestCreated() {
+    void createItemRequestUserExistsItemRequestCreated() {
         ItemRequest request = ItemRequestMapper.INSTANCE.toItemRequest(requestDto);
         request.setRequestor(requestor);
         when(userRepository.findById(requestor.getId())).thenReturn(Optional.of(requestor));
@@ -76,7 +76,7 @@ public class ItemRequestServiceImplTests {
 
     @Test
     @DisplayName("Создание запроса на аренду, когда пользователя не существует")
-    void createItemRequest_whenUserDoesNotExist_thenException() {
+    void createItemRequestUserDoesNotExistException() {
         when(userRepository.findById(requestor.getId())).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class,
@@ -85,7 +85,7 @@ public class ItemRequestServiceImplTests {
 
     @Test
     @DisplayName("Получение списка всех запросов пользователя")
-    void getAllUserItemsRequests_whenUserExists_thenItemRequestsReturned() {
+    void getAllUserItemsRequestsUserExistsItemRequestsReturned() {
         ItemRequest request = ItemRequestMapper.INSTANCE.toItemRequest(requestDto);
         request.setRequestor(requestor);
         request.setId(1L);
@@ -106,7 +106,7 @@ public class ItemRequestServiceImplTests {
 
     @Test
     @DisplayName("Получение списка запросов, когда пользователя не существует")
-    void getAllUserItemsRequests_whenUserDoesNotExist_thenException() {
+    void getAllUserItemsRequestsUserDoesNotExistException() {
         when(userRepository.findById(requestor.getId())).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class,
@@ -115,7 +115,7 @@ public class ItemRequestServiceImplTests {
 
     @Test
     @DisplayName("Получение списка всех запросов")
-    void getAllItems_whenUserExists_thenItemRequestsReturned() {
+    void getAllItemsUserExistsItemRequestsReturned() {
         int from = 0;
         int size = 10;
         Pageable pageable = PageRequest.of(from, size);
@@ -139,7 +139,7 @@ public class ItemRequestServiceImplTests {
 
     @Test
     @DisplayName("Получение списка запросов, когда пользователя не существует")
-    void getAllItems_whenUserDoesNotExist_thenException() {
+    void getAllItemsUserDoesNotExistException() {
         int from = 0;
         int size = 10;
         when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
@@ -150,7 +150,7 @@ public class ItemRequestServiceImplTests {
 
     @Test
     @DisplayName("Получение запроса")
-    void getItemRequest_whenUserExistsAndRequestIdExists_thenItemRequestReturned() {
+    void getItemRequestUserExistsAndRequestIdExistsItemRequestReturned() {
         ItemRequest request = ItemRequestMapper.INSTANCE.toItemRequest(requestDto);
         request.setRequestor(requestor);
         request.setId(1L);
@@ -170,7 +170,7 @@ public class ItemRequestServiceImplTests {
 
     @Test
     @DisplayName("Получение запроса, когда пользователя не существует")
-    void getItemRequest_whenUserDoesNotExist_thenException() {
+    void getItemRequestUserDoesNotExistException() {
         when(userRepository.findById(requestor.getId())).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class,
@@ -179,7 +179,7 @@ public class ItemRequestServiceImplTests {
 
     @Test
     @DisplayName("Получение запроса, когда запроса не существует")
-    void getItemRequest_whenRequestIdDoesNotExist_thenException() {
+    void getItemRequestRequestIdDoesNotExistException() {
         when(userRepository.findById(requestor.getId())).thenReturn(Optional.of(requestor));
 
         assertThrows(ItemNotFoundException.class,

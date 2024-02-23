@@ -87,7 +87,7 @@ public class BookingServiceImplTests {
 
     @Test
     @DisplayName("Создание бронирования на несуществующую вещь")
-    void createBooking_whenBookedItemNotExist_thenItemNotFoundException() {
+    void createBookingBookedItemNotExistItemNotFoundException() {
         User user = UserMapper.INSTANCE.toUser(userDto);
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         assertThrows(NullPointerException.class,
@@ -96,7 +96,7 @@ public class BookingServiceImplTests {
 
     @Test
     @DisplayName("Создание бронирования на существующую вещь")
-    void createBooking_whenBookerNotExist_thenUserNotFoundException() {
+    void createBookingBookerNotExistUserNotFoundException() {
         User user = UserMapper.INSTANCE.toUser(userDto);
 
         assertThrows(UserNotFoundException.class,
@@ -105,7 +105,7 @@ public class BookingServiceImplTests {
 
     @Test
     @DisplayName("Одобрение бронирования, когда брони не существует")
-    void approvingBooking_whenBookingNotExist_thenException() {
+    void approvingBookingBookingNotExistException() {
         when(bookingRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(BookingNotFoundException.class,
@@ -115,7 +115,7 @@ public class BookingServiceImplTests {
 
     @Test
     @DisplayName("Получение бронирования")
-    void getBooking_whenBookingExistsAndUserHasAccess_thenBookingReturned() {
+    void getBookingBookingExistsAndUserHasAccessBookingReturned() {
         Booking booking = BookingMapper.INSTANCE.toBooking(bookingDto);
         User user = UserMapper.INSTANCE.toUser(userDto);
         Item item = ItemMapper.INSTANCE.toItem(itemDto);
@@ -140,7 +140,7 @@ public class BookingServiceImplTests {
 
     @Test
     @DisplayName("Получение брони, к которой пользователь не имеет доступа")
-    void getBooking_whenBookingExistsAndUserHasNoAccess_thenException() {
+    void getBookingBookingExistsAndUserHasNoAccessException() {
         Booking booking = BookingMapper.INSTANCE.toBooking(bookingDto);
         User user = UserMapper.INSTANCE.toUser(userDto);
         Item item = ItemMapper.INSTANCE.toItem(itemDto);
@@ -158,7 +158,7 @@ public class BookingServiceImplTests {
 
     @Test
     @DisplayName("Получение брони, когда пользователя не существует")
-    void getBooking_whenUserNotExists_thenException() {
+    void getBookingUserNotExistsException() {
         Booking booking = BookingMapper.INSTANCE.toBooking(bookingDto);
         Item item = ItemMapper.INSTANCE.toItem(itemDto);
         item.setUser(UserMapper.INSTANCE.toUser(otherUserDto));
@@ -174,7 +174,7 @@ public class BookingServiceImplTests {
 
     @Test
     @DisplayName("Получение брони, когда вещи не существует")
-    void getBooking_whenBookingNotExists_thenException() {
+    void getBookingBookingNotExistsException() {
         when(bookingRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(BookingNotFoundException.class,
@@ -183,7 +183,7 @@ public class BookingServiceImplTests {
 
     @Test
     @DisplayName("Получение списка всех бронирований пользователя")
-    void getUserAllBooking_whenUserExists_thenBookingsReturned() {
+    void getUserAllBookingUserExistsBookingsReturned() {
         String state = "ALL";
         int from = 0;
         int size = 10;
@@ -209,7 +209,7 @@ public class BookingServiceImplTests {
 
     @Test
     @DisplayName("Получение списка бронирований когда пользователя не существует")
-    void getUserAllBooking_whenUserNotExists_thenException() {
+    void getUserAllBookingUserNotExistsException() {
         String state = "ALL";
         int from = 0;
         int size = 10;
@@ -222,7 +222,7 @@ public class BookingServiceImplTests {
 
     @Test
     @DisplayName("Получение списка всех бронирований владельцем вещи")
-    void getAllBookingByOwner_whenUserExists_thenBookingsReturned() {
+    void getAllBookingByOwnerUserExistsBookingsReturned() {
         String state = "ALL";
         int from = 0;
         int size = 10;
@@ -248,7 +248,7 @@ public class BookingServiceImplTests {
 
     @Test
     @DisplayName("Получение списка бронирований когда пользователя не существует")
-    void getAllBookingByOwner_whenUserNotExists_thenException() {
+    void getAllBookingByOwnerUserNotExistsException() {
         String state = "ALL";
         int from = 0;
         int size = 10;
@@ -261,7 +261,7 @@ public class BookingServiceImplTests {
 
     @Test
     @DisplayName("Получение списка бронирований c неизвестным параметром")
-    void getAllBookingByOwner_whenStateUnknown_thenException() {
+    void getAllBookingByOwneStateUnknownException() {
         String state = "SOMETHING";
         int from = 0;
         int size = 10;

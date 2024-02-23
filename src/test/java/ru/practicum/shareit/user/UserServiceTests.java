@@ -50,7 +50,7 @@ public class UserServiceTests {
 
     @Test
     @DisplayName("Создание пользователя")
-    public void createUser_whenUserFieldsValid_thenSaveUser() {
+    public void createUserUserFieldsValidSaveUser() {
         UserDto userDto = UserMapper.INSTANCE.toUserDto(user);
         when(userRepository.save(any())).thenReturn(user);
 
@@ -65,7 +65,7 @@ public class UserServiceTests {
 
     @Test
     @DisplayName("Получение пользователя по существующему ID")
-    public void getUser_whenUserIdExists_thenReturnUser() {
+    public void getUseUserIdExistsReturnUser() {
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
         UserDto actualUser = userService.getUser(user.getId());
@@ -77,7 +77,7 @@ public class UserServiceTests {
 
     @Test
     @DisplayName("Получение пользователя по несуществующему ID")
-    public void getUser_whenUserIdNotExists_thenThrowException() {
+    public void getUserUserIdNotExistsnThrowException() {
         when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
 
         final UserNotFoundException e =
@@ -88,7 +88,7 @@ public class UserServiceTests {
 
     @Test
     @DisplayName("Обновление пользователя с существующим ID")
-    public void updateUser_whenUserIdExists_thenUpdateUser() {
+    public void updateUserUserIdExistsUpdateUser() {
         UserDto userDto = UserMapper.INSTANCE.toUserDto(user);
         userDto.setName("NewName");
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
@@ -101,7 +101,7 @@ public class UserServiceTests {
 
     @Test
     @DisplayName("Обновление пользователя с уже существующим email")
-    void updateUser_whenEmailAlreadyExists_thenThrowException() {
+    void updateUserEmailAlreadyExistsThrowException() {
         UserDto userDto = new UserDto(1L, "User1", "user1@user.com");
         userDto.setEmail("user@user.com");
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
@@ -115,7 +115,7 @@ public class UserServiceTests {
 
     @Test
     @DisplayName("Обновление пользователя с несуществующим ID")
-    void updateUser_whenUserIdNotExists_thenThrowException() {
+    void updateUserIdNotExistsThrowException() {
         UserDto userDto = new UserDto(1L, "User1", "user1@user.com");
         userDto.setName("NewName");
         when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
@@ -128,7 +128,7 @@ public class UserServiceTests {
 
     @Test
     @DisplayName("Получение всех пользователей")
-    void getAllUsers_whenUsersExists_thenReturnList() {
+    void getAllUsersUsersExistsReturnList() {
         User user1 = new User(1L, "User1", "user1@user.com");
         User user2 = new User(2L, "User2", "user2@user.com");
 
@@ -145,7 +145,7 @@ public class UserServiceTests {
 
     @Test
     @DisplayName("Получение пустого списка пользователей")
-    void getAllUsers_whenUsersNotExists_thenReturnEmptyList() {
+    void getAllUsersUsersNotExistsReturnEmptyList() {
         when(userRepository.findAll()).thenReturn(Collections.emptyList());
 
         List<UserDto> actualUsers = userService.getAllUsers();
@@ -155,7 +155,7 @@ public class UserServiceTests {
 
     @Test
     @DisplayName("Удаление пользователя")
-    void deleteUser_whenUserIdExists_thenDeleteUser() {
+    void deleteUserUserIdExistsDeleteUser() {
         long userId = 1L;
 
         userService.deleteUser(userId);

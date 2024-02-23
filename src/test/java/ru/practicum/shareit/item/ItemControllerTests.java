@@ -55,7 +55,7 @@ public class ItemControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Создание вещи")
-    public void createItem_whenItemIsValid_thenItemCreated() {
+    public void createItemItemIsValidItemCreated() {
         when(itemService.addItem(anyLong(), any())).thenReturn(itemDto);
 
         mockMvc.perform(post("/items")
@@ -74,7 +74,7 @@ public class ItemControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Создание вещи пользователем без имени")
-    void createItem_whenItemNameIsInvalid_thenItemNotCreated() {
+    void createItemItemNameIsInvalidItemNotCreated() {
         ItemDto itemDto = new ItemDto();
         itemDto.setDescription("серп");
         itemDto.setAvailable(true);
@@ -92,7 +92,7 @@ public class ItemControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Создание вещи без описания")
-    void createItem_whenItemDescriptionIsInvalid_thenItemNotCreated() {
+    void createItemItemDescriptionIsInvalidItemNotCreated() {
         ItemDto itemDto = new ItemDto();
         itemDto.setName("Серп");
         itemDto.setAvailable(true);
@@ -108,7 +108,7 @@ public class ItemControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Создание вещи пользователем с ошибкой доступа")
-    void createItem_whenItemAvailableIsInvalid_thenItemNotCreated() {
+    void createItemItemAvailableIsInvalidItemNotCreated() {
         ItemDto itemDto = new ItemDto();
         itemDto.setName("Серп");
         itemDto.setDescription("Острый и красный");
@@ -206,7 +206,7 @@ public class ItemControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Поиск вещей по запросу")
-    void searchItems_whenTextIsProvided_thenItemsReturned() {
+    void searchItemsTextIsProvidedItemsReturned() {
         long userId = 1L;
         String searchText = "серП";
 
@@ -226,7 +226,7 @@ public class ItemControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Добавление комментария пользователем")
-    void postComment_whenUserExists_thenCommentAdded() {
+    void postCommentWhenUserExistsCommentAdded() {
         long userId = 1L;
         long itemId = 2L;
         CommentDto commentDto = new CommentDto();

@@ -52,7 +52,7 @@ public class BookingControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Создание бронирования")
-    void createBooking_whenBookingDataValid_thenBookingCreated() {
+    void createBookingBookingDataValidCreated() {
         when(bookingService.createBooking(anyLong(), any())).thenReturn(bookingDto);
         mockMvc.perform(post("/bookings")
                         .header("X-Sharer-User-Id", 1L)
@@ -65,7 +65,7 @@ public class BookingControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Бронирования с Корректной датой начала")
-    void createBooking_whenStartIsInvalid_thenException() {
+    void createBookingnStartIsInvalidException() {
         bookingDto.setStart(LocalDateTime.now().minusMinutes(1));
         mockMvc.perform(post("/bookings")
                         .header("X-Sharer-User-Id", 1L)
@@ -78,7 +78,7 @@ public class BookingControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Создание бронирования с валидной датой конца")
-    void createBooking_whenEndIsInvalid_thenException() {
+    void createBookingEndIsInvalidException() {
         bookingDto.setEnd(LocalDateTime.now().minusMinutes(1));
         mockMvc.perform(post("/bookings")
                         .header("X-Sharer-User-Id", 1L)
@@ -91,7 +91,7 @@ public class BookingControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Подтверждение бронирования")
-    void approvingBooking_whenBookingExistsAndStatusIsWaiting_thenBookingApproved() {
+    void approvingBookingBookingExistsAndStatusIsWaitingBookingApproved() {
         when(bookingService.approvingBooking(anyLong(), anyLong(), anyBoolean())).thenReturn(bookingDto);
         mockMvc.perform(patch("/bookings/{bookingId}", 2L)
                         .header("X-Sharer-User-Id", 1L)
@@ -105,7 +105,7 @@ public class BookingControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Получение бронирования")
-    void getBooking_whenBookingExistsAndUserHasAccess_thenBookingReturned() {
+    void getBookingBookingExistsAndUserHasAccessBookingReturned() {
         when(bookingService.getBooking(1L, 5L)).thenReturn(bookingDto);
         mockMvc.perform(get("/bookings/{bookingId}", 5L)
                         .header("X-Sharer-User-Id", 1L)
@@ -118,7 +118,7 @@ public class BookingControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Получение списка бронирований пользователя")
-    void getUserAllBooking_whenUserExists_thenBookingsReturned() {
+    void getUserAllBookingUserExistsBookingsReturned() {
         when(bookingService.getUserAllBooking(1L, "ALL", 0, 10)).thenReturn(List.of(bookingDto));
 
         mockMvc.perform(get("/bookings")
@@ -136,7 +136,7 @@ public class BookingControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Получение списка всех бронирований User с параметрами по умолчанию")
-    void getUserAllBooking_whenParamsDefault_thenBookingsReturned() {
+    void getUserAllBookingParamsDefaultBookingsReturned() {
         when(bookingService.getUserAllBooking(1L, "ALL", 0, 10)).thenReturn(List.of(bookingDto));
         mockMvc.perform(get("/bookings")
                         .header("X-Sharer-User-Id", 1L)
@@ -150,7 +150,7 @@ public class BookingControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Получение списка всех бронирований хозяином вещи")
-    void getAllBookingByOwner_whenUserExists_thenBookingsReturned() {
+    void getAllBookingByOwnerUserExistsBookingsReturned() {
         when(bookingService.getAllBookingByOwner(1L, "ALL", 0, 10))
                 .thenReturn(List.of(bookingDto));
         mockMvc.perform(get("/bookings/owner")
@@ -168,7 +168,7 @@ public class BookingControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Получение списка бронирований хозяином вещи без параметров")
-    void getAllBookingByOwner_whenParamsDefault_thenBookingsReturned() {
+    void getAllBookingByOwnerParamsDefaultBookingsReturned() {
         when(bookingService.getAllBookingByOwner(1L, "ALL", 0, 10))
                 .thenReturn(List.of(bookingDto));
         mockMvc.perform(get("/bookings/owner")
@@ -183,7 +183,7 @@ public class BookingControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Получение списка всех бронирований владельцем вещи с некорректным параметром size")
-    void getAllBookingByOwner_whenParamSizeMaxInvalid_thenException() {
+    void getAllBookingByOwnerParamSizeMaxInvalidException() {
         long userId = 1L;
         String state = "ALL";
         int from = 0;
@@ -202,7 +202,7 @@ public class BookingControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Получение списка всех бронирований владельцем вещи с некорректным параметром size")
-    void getAllBookingByOwner_whenParamSizeMinInvalid_thenException() {
+    void getAllBookingByOwnerParamSizeMinInvalidException() {
         long userId = 1L;
         String state = "ALL";
         int from = 0;
@@ -221,7 +221,7 @@ public class BookingControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Получение списка всех бронирований владельцем вещи с некорректным параметром from")
-    void getAllBookingByOwner_whenParamFromInvalid_thenException() {
+    void getAllBookingByOwnerParamFromInvalidException() {
         long userId = 1L;
         String state = "ALL";
         int from = -1;
@@ -240,7 +240,7 @@ public class BookingControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Получение списка всех бронирований с некорректным параметром size")
-    void getUserAllBooking_whenParamSizeMaxInvalid_thenException() {
+    void getUserAllBookingParamSizeMaxInvalidException() {
         long userId = 1L;
         String state = "ALL";
         int from = 0;

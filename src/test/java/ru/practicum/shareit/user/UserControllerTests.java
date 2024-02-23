@@ -57,7 +57,7 @@ public class UserControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Создание пользователя")
-    public void createUser_whenUserIsValid_thenUserCreated() {
+    public void createUserUserIsValidUserCreated() {
 
         when(userService.addUser(any())).thenReturn(userDto);
 
@@ -73,7 +73,7 @@ public class UserControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Создание пользователя с пустым полем name")
-    public void createUser_whenUserWithBlankName_thenReturnedBadRequest() {
+    public void createUserUserWithBlankNameReturnedBadRequest() {
         final UserDto userDtoWithBlankName = new UserDto(null, "user@user.com", null);
 
         when(userService.addUser(userDtoWithBlankName)).thenThrow(ValidationException.class);
@@ -89,7 +89,7 @@ public class UserControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Создание пользователя с пустым полем email")
-    public void createUser_whenUserWithBlankEmail_thenReturnedBadRequest() {
+    public void createUserUserWithBlankEmailReturnedBadRequest() {
         final UserDto userDtoWithBlankEmail = new UserDto(null, "User", null);
         when(userService.addUser(userDtoWithBlankEmail)).thenThrow(ValidationException.class);
 
@@ -104,7 +104,7 @@ public class UserControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Создание пользователя с не корректным email")
-    public void createUser_whenUserWithWrongEmail_thenReturnedBadRequest() {
+    public void createUserUserWithWrongEmailReturnedBadRequest() {
         final UserDto userWithWrongEmail = new UserDto(null, "user.com", "11111");
         when(userService.addUser(userWithWrongEmail)).thenThrow(ValidationException.class);
 
@@ -133,7 +133,7 @@ public class UserControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Получение несуществующего пользователя")
-    public void getUser_whenIdNotExist_thenReturnUserNotFoundException() {
+    public void getUserIdNotExistReturnUserNotFoundException() {
         long userId = 100L;
         when(userService.getUser(anyLong())).thenThrow(UserNotFoundException.class);
 
@@ -168,7 +168,7 @@ public class UserControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Обновление пользователя - только имя")
-    public void updateUser_whenUserOnlyName_thenUserUpdated() {
+    public void updateUserUserOnlyNameUserUpdated() {
         final Long userId = 1L;
         userDto.setName("updateName");
         UserDto updatedUser = makeUserDto(userId, userDto.getName(), userDto.getEmail());
@@ -185,7 +185,7 @@ public class UserControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Обновление пользователя - только email")
-    public void updateUser_whenUserOnlyEmail_thenUserUpdated() {
+    public void updateUserUserOnlyEmailUserUpdated() {
         final Long userId = 1L;
         userDto.setEmail("update@user.com");
         UserDto updatedUser = makeUserDto(userId, userDto.getName(), userDto.getEmail());
@@ -202,7 +202,7 @@ public class UserControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Обновление пользователя с такой же почтой")
-    public void updateUser_whenUserWithSameEmail_thenUserUpdated() {
+    public void updateUserUserWithSameEmailUserUpdated() {
         final Long userId = 1L;
         userDto.setName("updateName");
         userDto.setEmail("user@user.com");
@@ -222,7 +222,7 @@ public class UserControllerTests {
     @SneakyThrows
     @Test
     @DisplayName("Обновление пользователя с уже занятой почтой")
-    public void updateUser_whenUserWithExistEmail_thenUserEmailAlreadyExistExceptionTrows() {
+    public void updateUserUserWithExistEmailEmailAlreadyExistExceptionTrows() {
         final Long userId = 1L;
         UserDto updatedUser = makeUserDto(userId, userDto.getName(), userDto.getEmail());
 

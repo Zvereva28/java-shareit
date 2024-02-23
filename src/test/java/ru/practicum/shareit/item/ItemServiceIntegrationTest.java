@@ -106,7 +106,7 @@ class ItemServiceIntegrationTest {
 
     @Test
     @DisplayName("Создание вещи на запрос")
-    void createItem_whenRequest_thenItemIsCreated() {
+    void createItemRequestItemIsCreated() {
         long userId = userRepository.save(UserMapper.INSTANCE.toUser(userDto)).getId();
         long requestId = requestRepository.save(ItemRequestMapper.INSTANCE.toItemRequest(requestDto)).getId();
         itemDto.setRequestId(requestId);
@@ -122,7 +122,7 @@ class ItemServiceIntegrationTest {
 
     @Test
     @DisplayName("Создание вещи если id пользователя не существует")
-    void createItem_whenUserNotExist_thenThrowUserNotFoundException() {
+    void createItemUserNotExistThrowUserNotFoundException() {
 
         final UserNotFoundException e = assertThrows(
                 UserNotFoundException.class,
@@ -150,7 +150,7 @@ class ItemServiceIntegrationTest {
 
     @Test
     @DisplayName("Обновление вещи пользователем, который не является владельцем")
-    void updateItem_whenUserExistsAndNotOwner_thenItemIsUpdated() {
+    void updateItemUserExistsAndNotOwnerItemIsUpdated() {
         long userId = userRepository.save(UserMapper.INSTANCE.toUser(userDto)).getId();
         long itemId = itemService.addItem(userId, itemDto).getId();
         long otherUserId = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto)).getId();
@@ -163,7 +163,7 @@ class ItemServiceIntegrationTest {
 
     @Test
     @DisplayName("Обновление вещи, если пользователя не существует")
-    void updateItem_whenUserNotExist_thenReturnUserNotFoundException() {
+    void updateItemUserNotExistReturnUserNotFoundException() {
         long userId = 1L;
         long itemId = 1L;
 
@@ -174,7 +174,7 @@ class ItemServiceIntegrationTest {
 
     @Test
     @DisplayName("Обновление вещи, если вещи не существует")
-    void updateItem_whenItemNotExist_thenReturnItemNotFoundException() {
+    void updateItemItemNotExistException() {
         long userId = userRepository.save(UserMapper.INSTANCE.toUser(userDto)).getId();
         long itemId = 1L;
 
@@ -239,7 +239,7 @@ class ItemServiceIntegrationTest {
 
     @Test
     @DisplayName("Получение вещи пользователем, который не является владельцем")
-    void getItem_whenUserNotOwner_thenReturnItemOwnerDto() {
+    void getItemUserNotOwner_thenReturnItemOwnerDto() {
         long userId = userRepository.save(UserMapper.INSTANCE.toUser(userDto)).getId();
         long itemId = itemService.addItem(userId, itemDto).getId();
         long otherUserId = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto)).getId();
@@ -258,7 +258,7 @@ class ItemServiceIntegrationTest {
 
     @Test
     @DisplayName("Получение вещи пользователем, который является владельцем")
-    void getItem_whenUserOwner_thenReturnItemOwnerDtoWithBookings() {
+    void getItemUserOwnerReturnItemOwnerDtoWithBookings() {
 
         long userId = userRepository.save(UserMapper.INSTANCE.toUser(userDto)).getId();
         Item item = ItemMapper.INSTANCE.toItem(itemService.addItem(userId, itemDto));
@@ -321,7 +321,7 @@ class ItemServiceIntegrationTest {
 
     @Test
     @DisplayName("Поиск вещей пользователем с пустым запросом")
-    void searchItems_whenUserExistsAndSearchTextIsEmpty_thenReturnEmptyList() {
+    void searchItemsUserExistsAndSearchTextIsEmptyReturnEmptyList() {
         long userId = userRepository.save(UserMapper.INSTANCE.toUser(userDto)).getId();
         itemService.addItem(userId, itemDto);
         String searchText = "";
@@ -335,7 +335,7 @@ class ItemServiceIntegrationTest {
 
     @Test
     @DisplayName("Поиск несуществующих вещей")
-    void searchItems_whenUserExistsAndSearchTextIsInvalid_thenReturnEmptyList() {
+    void searchItemsUserExistsAndSearchTextIsInvalidReturnEmptyList() {
         long userId = userRepository.save(UserMapper.INSTANCE.toUser(userDto)).getId();
         itemService.addItem(userId, itemDto);
         String searchText = "Новая вещь";
@@ -349,7 +349,7 @@ class ItemServiceIntegrationTest {
 
     @Test
     @DisplayName("Добавление комментария пользователем, который не арендовал вещь")
-    void postComment_whenUserIsNotBooker_thenThrowItemBookerException() {
+    void postCommentIsNotBookerThrowItemBookerException() {
         long userId = userRepository.save(UserMapper.INSTANCE.toUser(userDto)).getId();
         long itemId = ItemMapper.INSTANCE.toItem(itemService.addItem(userId, itemDto)).getId();
         long otherUserId = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto)).getId();
