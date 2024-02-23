@@ -121,5 +121,99 @@ public class ItemRequestControllerTest {
         verify(requestService).getItemRequest(userId, requestId);
     }
 
+    @SneakyThrows
+    @Test
+    @DisplayName("Получение списка запросов с некорректным параметром size")
+    void getAllItems_whenParamSizeMaxInvalid_thenItemRequestsReturned() {
+        int from = 0;
+        int size = 999;
+        long userId = 1L;
+        when(requestService.getAllItems(userId, from, size)).thenReturn(List.of(requestDto));
+
+        mockMvc.perform(get("/requests/all")
+                        .header("X-Sharer-User-Id", userId)
+                        .param("from", String.valueOf(from))
+                        .param("size", String.valueOf(size))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+
+        verify(requestService, never()).getAllItems(userId, from, size);
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Получение списка запросов с некорректным параметром from")
+    void getAllItems_whenParamFromInvalid_thenItemRequestsReturned() {
+        int from = -1;
+        int size = 10;
+        long userId = 1L;
+        when(requestService.getAllItems(userId, from, size)).thenReturn(List.of(requestDto));
+
+        mockMvc.perform(get("/requests/all")
+                        .header("X-Sharer-User-Id", userId)
+                        .param("from", String.valueOf(from))
+                        .param("size", String.valueOf(size))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+
+        verify(requestService, never()).getAllItems(userId, from, size);
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Получение списка запросов с некорректным параметром size")
+    void getAllItems_whenParamSizeMinInvalid_thenItemRequestsReturned() {
+        int from = 0;
+        int size = 0;
+        long userId = 1L;
+        when(requestService.getAllItems(userId, from, size)).thenReturn(List.of(requestDto));
+
+        mockMvc.perform(get("/requests/all")
+                        .header("X-Sharer-User-Id", userId)
+                        .param("from", String.valueOf(from))
+                        .param("size", String.valueOf(size))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+
+        verify(requestService, never()).getAllItems(userId, from, size);
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Получение списка всех запросов")
+    void getAllItemsЦWhenUserExistsItemRequestsReturned() {
+        int from = 0;
+        int size = 10;
+        long userId = 1L;
+        when(requestService.getAllItems(userId, from, size)).thenReturn(List.of(requestDto));
+
+        mockMvc.perform(get("/requests/all")
+                        .header("X-Sharer-User-Id", userId)
+                        .param("from", String.valueOf(from))
+                        .param("size", String.valueOf(size))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].description", is(requestDto.getDescription())));
+
+        verify(requestService).getAllItems(userId, from, size);
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Получение списка всех запросов пользователя")
+    public void getAllUserItems_whenUserExists_thenItemsReturned() {
+        long userId = 1L;
+        when(requestService.getAllUserItemsRequests(userId)).thenReturn(List.of(requestDto));
+
+        mockMvc.perform(get("/requests")
+                        .header("X-Sharer-User-Id", userId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].description", is(requestDto.getDescription())));
+
+        verify(requestService).getAllUserItemsRequests(anyLong());
+    }
 
 }

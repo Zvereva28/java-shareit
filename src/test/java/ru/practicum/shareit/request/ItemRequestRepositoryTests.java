@@ -34,8 +34,8 @@ public class ItemRequestRepositoryTests {
 
     @BeforeEach
     void setUp() {
-        user = userRepository.save(new User(1L, "Name", "user@user.com"));
-        otherUser = userRepository.save(new User(2L, "OtherName", "other@email/com"));
+        user = userRepository.save(new User(1L, "Name", "user@ya .com"));
+        otherUser = userRepository.save(new User(2L, "OtherName", "other@yandex/com"));
 
         ItemRequestDto requestDto = new ItemRequestDto();
         requestDto.setDescription("Хотел бы воспользоваться щёткой для обуви");
