@@ -15,27 +15,27 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("select b " +
             "from Booking b " +
-            "where b.booker.id = ?1 " +
+            "where b.booker.id = :bookerId " +
             "ORDER by b.start DESC")
     Page<Booking> findAllByBookerIdOrderByStartDateDesc(long bookerId, Pageable pageable);
 
     @Query("select b " +
             "from Booking b " +
-            "where b.booker.id = ?1 " +
+            "where b.booker.id = :bookerId " +
             "and b.end < CURRENT_TIMESTAMP " +
             "ORDER by b.start DESC")
     Page<Booking> findAllByBookerIdAndEndDateBefore(long bookerId, Pageable pageable);
 
     @Query("select b " +
             "from Booking b " +
-            "where b.booker.id = ?1 " +
+            "where b.booker.id = :bookerId " +
             "and b.start > CURRENT_TIMESTAMP " +
             "ORDER by b.start DESC")
     Page<Booking> findAllByBookerIdAndStartDateAfter(long bookerId, Pageable pageable);
 
     @Query("select b " +
             "from Booking b " +
-            "where b.booker.id = ?1 " +
+            "where b.booker.id = :bookerId " +
             "AND b.start <= CURRENT_TIMESTAMP " +
             "AND b.end >= CURRENT_TIMESTAMP " +
             "ORDER by b.start DESC")
@@ -43,8 +43,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("select b " +
             "from Booking b " +
-            "where b.booker.id = ?1 " +
-            "and b.status = ?2 " +
+            "where b.booker.id = :bookerId " +
+            "and b.status = :status " +
             "ORDER by b.start DESC")
     Page<Booking> findAllByBookerIdAndStatusOrderByStartDateDesc(long bookerId, BookingStatus status, Pageable pageable);
 
@@ -52,14 +52,14 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("select b " +
             "from Booking as b " +
             "join b.item as i " +
-            "where i.user.id = ?1 " +
+            "where i.user.id = :ownerId " +
             "order by b.start desc")
     Page<Booking> findAllByOwnerIdOrderByStartDateDesc(long ownerId, Pageable pageable);
 
     @Query("select b " +
             "from Booking as b " +
             "join b.item as i " +
-            "where i.user.id = ?1 " +
+            "where i.user.id = :ownerId " +
             "and b.end < CURRENT_TIMESTAMP " +
             "order by b.start desc")
     Page<Booking> findAllByOwnerIdAndEndDateBefore(long ownerId, Pageable pageable);
@@ -67,7 +67,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("select b " +
             "from Booking as b " +
             "join b.item as i " +
-            "where i.user.id = ?1 " +
+            "where i.user.id = :ownerId " +
             "and b.start > CURRENT_TIMESTAMP " +
             "order by b.start desc")
     Page<Booking> findAllByOwnerIdAndStartDateAfter(long ownerId, Pageable pageable);
@@ -75,7 +75,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("select b " +
             "from Booking as b " +
             "join b.item as i " +
-            "where i.user.id = ?1 " +
+            "where i.user.id = :ownerId " +
             "AND b.start <= CURRENT_TIMESTAMP " +
             "AND b.end >= CURRENT_TIMESTAMP " +
             "order by b.start desc")
@@ -84,21 +84,21 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("select b " +
             "from Booking as b " +
             "join b.item as i " +
-            "where i.user.id = ?1 " +
-            "and b.status = ?2 " +
+            "where i.user.id = :ownerId " +
+            "and b.status = :status " +
             "order by b.start desc")
     Page<Booking> findAllByOwnerIdAndStatusOrderByStartDateDesc(long ownerId, BookingStatus status, Pageable pageable);
 
     @Query("select b " +
             "from Booking b " +
-            "where b.item.id = ?1 " +
+            "where b.item.id = :itemId " +
             "and b.start < CURRENT_TIMESTAMP " +
             "ORDER by b.start DESC")
     List<Booking> findFirstByItemIdAndEndDateBefore(long itemId);
 
     @Query("select b " +
             "from Booking b " +
-            "where b.item.id = ?1 " +
+            "where b.item.id = :itemId " +
             "and b.start > CURRENT_TIMESTAMP " +
             "and b.status = 'APPROVED' " +
             "ORDER by b.start asc")

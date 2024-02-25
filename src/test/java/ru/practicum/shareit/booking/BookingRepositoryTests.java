@@ -12,7 +12,7 @@ import ru.practicum.shareit.booking.mappers.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.mappers.ItemMapper;
+import ru.practicum.shareit.item.mappers.ItemMapperImpl;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -30,13 +30,13 @@ import static ru.practicum.shareit.booking.enums.BookingStatus.APPROVED;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class BookingRepositoryTests {
 
+    private final ItemMapperImpl itemMapper = new ItemMapperImpl();
     @Autowired
     private BookingRepository bookingRepository;
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private ItemRepository itemRepository;
-
     private User user = new User();
     private User otherUser = new User();
     private Item item = new Item();
@@ -55,8 +55,7 @@ public class BookingRepositoryTests {
         itemDto.setDescription("Золотой молоток");
         itemDto.setAvailable(true);
         item = itemRepository
-                .save(ItemMapper
-                        .INSTANCE.toItem(itemDto));
+                .save(itemMapper.toItem(itemDto));
         item.setUser(user);
 
         BookingDto bookingDto = new BookingDto();

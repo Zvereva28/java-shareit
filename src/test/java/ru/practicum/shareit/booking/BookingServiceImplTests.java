@@ -19,7 +19,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.booking.service.BookingServiceImpl;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.mappers.ItemMapper;
+import ru.practicum.shareit.item.mappers.ItemMapperImpl;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -60,6 +60,7 @@ public class BookingServiceImplTests {
     private final BookingDto bookingDto = new BookingDto();
     private final BookingDto lastBookingDto = new BookingDto();
     private final BookingDto nextBookingDto = new BookingDto();
+    private final ItemMapperImpl itemMapper = new ItemMapperImpl();
 
     @BeforeEach
     void setUp() {
@@ -118,7 +119,7 @@ public class BookingServiceImplTests {
     void getBookingBookingExistsAndUserHasAccessBookingReturned() {
         Booking booking = BookingMapper.INSTANCE.toBooking(bookingDto);
         User user = UserMapper.INSTANCE.toUser(userDto);
-        Item item = ItemMapper.INSTANCE.toItem(itemDto);
+        Item item = itemMapper.toItem(itemDto);
         item.setUser(user);
         booking.setItem(item);
 
@@ -143,7 +144,7 @@ public class BookingServiceImplTests {
     void getBookingBookingExistsAndUserHasNoAccessException() {
         Booking booking = BookingMapper.INSTANCE.toBooking(bookingDto);
         User user = UserMapper.INSTANCE.toUser(userDto);
-        Item item = ItemMapper.INSTANCE.toItem(itemDto);
+        Item item = itemMapper.toItem(itemDto);
         item.setUser(UserMapper.INSTANCE.toUser(otherUserDto));
         booking.setItem(item);
         booking.setBooker(UserMapper.INSTANCE.toUser(otherUserDto));
@@ -160,7 +161,7 @@ public class BookingServiceImplTests {
     @DisplayName("Получение брони, когда пользователя не существует")
     void getBookingUserNotExistsException() {
         Booking booking = BookingMapper.INSTANCE.toBooking(bookingDto);
-        Item item = ItemMapper.INSTANCE.toItem(itemDto);
+        Item item = itemMapper.toItem(itemDto);
         item.setUser(UserMapper.INSTANCE.toUser(otherUserDto));
         booking.setItem(item);
 
@@ -190,7 +191,7 @@ public class BookingServiceImplTests {
         Booking booking = BookingMapper.INSTANCE.toBooking(bookingDto);
         User user = UserMapper.INSTANCE.toUser(userDto);
         User otherUser = UserMapper.INSTANCE.toUser(otherUserDto);
-        Item item = ItemMapper.INSTANCE.toItem(itemDto);
+        Item item = itemMapper.toItem(itemDto);
         item.setUser(user);
         booking.setItem(item);
         booking.setBooker(otherUser);
@@ -229,7 +230,7 @@ public class BookingServiceImplTests {
         Booking booking = BookingMapper.INSTANCE.toBooking(bookingDto);
         User user = UserMapper.INSTANCE.toUser(userDto);
         User otherUser = UserMapper.INSTANCE.toUser(otherUserDto);
-        Item item = ItemMapper.INSTANCE.toItem(itemDto);
+        Item item = itemMapper.toItem(itemDto);
         item.setUser(user);
         booking.setItem(item);
         booking.setBooker(otherUser);

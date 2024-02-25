@@ -17,7 +17,7 @@ import ru.practicum.shareit.item.exeption.ItemBookerException;
 import ru.practicum.shareit.item.exeption.ItemException;
 import ru.practicum.shareit.item.exeption.ItemNotFoundException;
 import ru.practicum.shareit.item.mappers.CommentMapper;
-import ru.practicum.shareit.item.mappers.ItemMapper;
+import ru.practicum.shareit.item.mappers.ItemMapperImpl;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
@@ -45,13 +45,14 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
     private final ItemRequestRepository requestRepository;
+    private final ItemMapperImpl itemMapper;
 
 
     @Transactional
     @Override
     public ItemDto addItem(long userId, ItemDto itemDto) {
         User user = ifUserExistReturnUser(userId);
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(user);
         log.debug("Создана новая вещь - '{}'", item);
         if (itemDto.getRequestId() != null) {
@@ -59,7 +60,7 @@ public class ItemServiceImpl implements ItemService {
             item.setRequest(request);
         }
 
-        return ItemMapper.INSTANCE.toItemDto(item);
+        return itemMapper.toItemDto(item);
     }
 
     @Transactional
@@ -73,7 +74,7 @@ public class ItemServiceImpl implements ItemService {
         item.setAvailable(itemDto.getAvailable() != null ? itemDto.getAvailable() : item.getAvailable());
         log.debug("Вещь '{}' - обновлена", item);
 
-        return ItemMapper.INSTANCE.toItemDto(item);
+        return itemMapper.toItemDto(item);
     }
 
     @Override
@@ -82,7 +83,7 @@ public class ItemServiceImpl implements ItemService {
         List<CommentDto> comments = getCommentsByItemId(itemId);
 
         if (item.getUser().getId() != userId) {
-            ItemOwnerDto itemOwnerDto = ItemMapper.INSTANCE.toItemOwnerDto(item);
+            ItemOwnerDto itemOwnerDto = itemMapper.toItemOwnerDto(item);
             itemOwnerDto.setComments(comments);
             log.debug("Получена вещь '{}'", item);
             return itemOwnerDto;
@@ -92,7 +93,7 @@ public class ItemServiceImpl implements ItemService {
         List<Booking> nextBookings = bookingRepository.findFirstByItemIdAndStartDateAfter(itemId);
         Booking nextBooking = nextBookings.stream().findFirst().orElse(null);
 
-        ItemOwnerDto itemOwnerDto = ItemMapper.INSTANCE.toItemOwnerDto(item);
+        ItemOwnerDto itemOwnerDto = itemMapper.toItemOwnerDto(item);
         itemOwnerDto.setLastBooking(BookingMapper.INSTANCE.lastBookingDto(lastBooking));
         itemOwnerDto.setNextBooking(BookingMapper.INSTANCE.nextBookingDto(nextBooking));
         itemOwnerDto.setComments(comments);
@@ -112,7 +113,7 @@ public class ItemServiceImpl implements ItemService {
         List<ItemDto> itemsDto = new ArrayList<>();
 
         for (Item item : items) {
-            ItemOwnerDto itemDto = ItemMapper.INSTANCE.toItemOwnerDto(item);
+            ItemOwnerDto itemDto = itemMapper.toItemOwnerDto(item);
             List<Booking> lastBookings = bookingRepository.findFirstByItemIdAndEndDateBefore(item.getId());
             Booking lastBooking = lastBookings.stream().findFirst().orElse(null);
             List<Booking> nextBookings = bookingRepository.findFirstByItemIdAndStartDateAfter(item.getId());
@@ -139,7 +140,7 @@ public class ItemServiceImpl implements ItemService {
         final Page<Item> itemsPage = itemRepository.findByUserAndNameOrDescription(userId, searchText, pageable);
         List<ItemDto> items = itemsPage
                 .stream()
-                .map(ItemMapper.INSTANCE::toItemDto)
+                .map(itemMapper::toItemDto)
                 .collect(Collectors.toList());
 
         return items;

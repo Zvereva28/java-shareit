@@ -19,11 +19,10 @@ import ru.practicum.shareit.item.exeption.ItemBookerException;
 import ru.practicum.shareit.item.exeption.ItemException;
 import ru.practicum.shareit.item.exeption.ItemNotFoundException;
 import ru.practicum.shareit.item.mappers.CommentMapper;
-import ru.practicum.shareit.item.mappers.ItemMapper;
+import ru.practicum.shareit.item.mappers.ItemMapperImpl;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
-import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.mappers.ItemRequestMapper;
@@ -53,7 +52,7 @@ import static ru.practicum.shareit.booking.enums.BookingStatus.APPROVED;
 class ItemServiceIntegrationTest {
 
     private final ItemServiceImpl itemService;
-    private final ItemRepository itemRepository;
+    private final ItemMapperImpl itemMapper;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
@@ -261,7 +260,7 @@ class ItemServiceIntegrationTest {
     void getItemUserOwnerReturnItemOwnerDtoWithBookings() {
 
         long userId = userRepository.save(UserMapper.INSTANCE.toUser(userDto)).getId();
-        Item item = ItemMapper.INSTANCE.toItem(itemService.addItem(userId, itemDto));
+        Item item = itemMapper.toItem(itemService.addItem(userId, itemDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
         Comment comment = commentRepository.save(CommentMapper.INSTANCE.toComment(commentDto));
         comment.setItem(item);
@@ -308,7 +307,7 @@ class ItemServiceIntegrationTest {
         int from = 0;
         int size = 10;
         long userId = userRepository.save(UserMapper.INSTANCE.toUser(userDto)).getId();
-        Item item = ItemMapper.INSTANCE.toItem(itemService.addItem(userId, itemDto));
+        Item item = itemMapper.toItem(itemService.addItem(userId, itemDto));
 
         List<ItemDto> actualItems = itemService.getAllItems(userId, from, size);
 
@@ -351,7 +350,7 @@ class ItemServiceIntegrationTest {
     @DisplayName("Добавление комментария пользователем, который не арендовал вещь")
     void postCommentIsNotBookerThrowItemBookerException() {
         long userId = userRepository.save(UserMapper.INSTANCE.toUser(userDto)).getId();
-        long itemId = ItemMapper.INSTANCE.toItem(itemService.addItem(userId, itemDto)).getId();
+        long itemId = itemMapper.toItem(itemService.addItem(userId, itemDto)).getId();
         long otherUserId = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto)).getId();
 
         assertThatThrownBy(() -> itemService.postComment(otherUserId, itemId, commentDto))

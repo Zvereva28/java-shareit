@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.item.exeption.ItemNotFoundException;
-import ru.practicum.shareit.item.mappers.ItemMapper;
+import ru.practicum.shareit.item.mappers.ItemMapperImpl;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -30,6 +30,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private final ItemRequestRepository itemRequestRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
+    private final ItemMapperImpl itemMapper;
 
     @Override
     @Transactional
@@ -51,7 +52,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .peek(itemRequestDto -> {
                     List<Item> items = itemRepository.findAllByRequestId(itemRequestDto.getId());
                     itemRequestDto.setItems(items.stream()
-                            .map(ItemMapper.INSTANCE::toItemDto).collect(Collectors.toList()));
+                            .map(itemMapper::toItemDto).collect(Collectors.toList()));
                 })
                 .collect(Collectors.toList());
         log.debug("Получен список запросов пользователя с id '{}'", userId);
@@ -69,7 +70,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .peek(itemRequestDto -> {
                     List<Item> items = itemRepository.findAllByRequestId(itemRequestDto.getId());
                     itemRequestDto.setItems(items.stream()
-                            .map(ItemMapper.INSTANCE::toItemDto).collect(Collectors.toList()));
+                            .map(itemMapper::toItemDto).collect(Collectors.toList()));
                 })
                 .collect(Collectors.toList());
 
@@ -88,7 +89,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                                 String.format("Запроса с id %d нет в базе", requestId))));
         List<Item> items = itemRepository.findAllByRequestId(itemRequestDto.getId());
         itemRequestDto.setItems(items.stream()
-                .map(ItemMapper.INSTANCE::toItemDto).collect(Collectors.toList()));
+                .map(itemMapper::toItemDto).collect(Collectors.toList()));
         log.debug("Получен запрос с id '{}'", requestId);
 
         return itemRequestDto;

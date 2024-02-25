@@ -18,7 +18,7 @@ import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.booking.service.BookingServiceImpl;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.exeption.ItemNotFoundException;
-import ru.practicum.shareit.item.mappers.ItemMapper;
+import ru.practicum.shareit.item.mappers.ItemMapperImpl;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -48,6 +48,7 @@ public class BookingServiceIntegrationTests {
     private final UserRepository userRepository;
     private final BookingServiceImpl bookingService;
     private final BookingRepository bookingRepository;
+    private final ItemMapperImpl itemMapper;
 
     private final ItemDto itemDto = new ItemDto();
     private final BookingDto bookingDto = new BookingDto();
@@ -84,7 +85,7 @@ public class BookingServiceIntegrationTests {
     void createBookingBookingDataValidBookingCreated() {
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(user);
         BookingReplyDto actualBooking = (BookingReplyDto) bookingService.createBooking(otherUser.getId(), bookingDto);
         assertNotNull(actualBooking.getId());
@@ -99,7 +100,7 @@ public class BookingServiceIntegrationTests {
     void createBookingEndDateNotValidException() {
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(user);
         bookingDto.setEnd(LocalDateTime.now().minusDays(1));
         assertThrows(BookingException.class,
@@ -110,7 +111,7 @@ public class BookingServiceIntegrationTests {
     @DisplayName("Создание бронирования на вещь, которая принадлежит пользователю")
     void createBookingBookedItemBelongToUserNotFoundException() {
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(user);
         assertThrows(BookingNotFoundException.class,
                 () -> bookingService.createBooking(user.getId(), bookingDto));
@@ -137,7 +138,7 @@ public class BookingServiceIntegrationTests {
     void approvingBookingBookingApproved() {
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(user);
         Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(bookingDto));
         booking.setItem(item);
@@ -156,7 +157,7 @@ public class BookingServiceIntegrationTests {
     void approvingBookingException() {
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(otherUser);
         Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(bookingDto));
         booking.setItem(item);
@@ -170,7 +171,7 @@ public class BookingServiceIntegrationTests {
     @Test
     @DisplayName("Одобрение бронирования - пользователя не существует")
     void approvingBookingNotExistnException() {
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(bookingDto));
         booking.setItem(item);
 
@@ -191,7 +192,7 @@ public class BookingServiceIntegrationTests {
     void getBookingBookingReturned() {
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(user);
         Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(bookingDto));
         booking.setItem(item);
@@ -209,7 +210,7 @@ public class BookingServiceIntegrationTests {
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
         User stranger = userRepository.save(UserMapper.INSTANCE.toUser(strangerDto));
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(user);
         Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(bookingDto));
         booking.setBooker(otherUser);
@@ -222,7 +223,7 @@ public class BookingServiceIntegrationTests {
     @DisplayName("Получение брони - пользователя не существует")
     void getBookingUserNotExistsException() {
         Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(bookingDto));
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(UserMapper.INSTANCE.toUser(otherUserDto));
         booking.setItem(item);
         assertThrows(UserNotFoundException.class,
@@ -234,7 +235,7 @@ public class BookingServiceIntegrationTests {
     void getUserAllBookingAllBookingsReturned() {
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(user);
         Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(bookingDto));
         booking.setItem(item);
@@ -259,7 +260,7 @@ public class BookingServiceIntegrationTests {
     void getUserAllBookingPastBookingsReturned() {
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(user);
         Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(lastBookingDto));
         booking.setItem(item);
@@ -276,7 +277,7 @@ public class BookingServiceIntegrationTests {
     void getUserAllBookingStateIsFutureBookingsReturned() {
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(user);
         Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(nextBookingDto));
         booking.setItem(item);
@@ -293,7 +294,7 @@ public class BookingServiceIntegrationTests {
     void getUserAllBookingStateIsCurrentBookingsReturned() {
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(user);
         Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(bookingDto));
         booking.setItem(item);
@@ -310,7 +311,7 @@ public class BookingServiceIntegrationTests {
     void getUserAllBookingStateIsWaitingBookingsReturned() {
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(user);
         Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(bookingDto));
         booking.setItem(item);
@@ -327,7 +328,7 @@ public class BookingServiceIntegrationTests {
     void getAllBookingByOwnerUserExistsBookingsReturned() {
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(user);
         Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(bookingDto));
         booking.setItem(item);
@@ -356,7 +357,7 @@ public class BookingServiceIntegrationTests {
         int size = 10;
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(user);
         Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(bookingDto));
         booking.setItem(item);
@@ -401,7 +402,7 @@ public class BookingServiceIntegrationTests {
         int size = 10;
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(user);
         Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(lastBookingDto));
         booking.setItem(item);
@@ -422,7 +423,7 @@ public class BookingServiceIntegrationTests {
         int size = 10;
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(user);
         Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(nextBookingDto));
         booking.setItem(item);
@@ -443,7 +444,7 @@ public class BookingServiceIntegrationTests {
         int size = 10;
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(user);
         Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(bookingDto));
         booking.setItem(item);
@@ -464,7 +465,7 @@ public class BookingServiceIntegrationTests {
         int size = 10;
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(user);
         Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(bookingDto));
         booking.setItem(item);
@@ -485,7 +486,7 @@ public class BookingServiceIntegrationTests {
         int size = 10;
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(user);
         Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(bookingDto));
         booking.setItem(item);
@@ -503,7 +504,7 @@ public class BookingServiceIntegrationTests {
     void getAllBookingByOwnerStateIsPastBookingsReturned() {
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(user);
         Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(lastBookingDto));
         booking.setItem(item);
@@ -520,7 +521,7 @@ public class BookingServiceIntegrationTests {
     void getAllBookingByOwnerStateIsFutureBookingsReturned() {
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(user);
         Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(nextBookingDto));
         booking.setItem(item);
@@ -539,7 +540,7 @@ public class BookingServiceIntegrationTests {
     void getAllBookingByOwnerStateIsCurrentBookingsReturned() {
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(user);
         Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(bookingDto));
         booking.setItem(item);
@@ -558,7 +559,7 @@ public class BookingServiceIntegrationTests {
     void getAllBookingByOwnerStateIsBookingsReturned() {
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(user);
         Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(bookingDto));
         booking.setItem(item);
@@ -575,7 +576,7 @@ public class BookingServiceIntegrationTests {
     void getAllBookingByOwnerSize2BookingsReturned() {
         User user = userRepository.save(UserMapper.INSTANCE.toUser(userDto));
         User otherUser = userRepository.save(UserMapper.INSTANCE.toUser(otherUserDto));
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setUser(user);
         Booking booking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(bookingDto));
         Booking lastBooking = bookingRepository.save(BookingMapper.INSTANCE.toBooking(lastBookingDto));

@@ -10,7 +10,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.exeption.ItemNotFoundException;
-import ru.practicum.shareit.item.mappers.ItemMapper;
+import ru.practicum.shareit.item.mappers.ItemMapperImpl;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -42,6 +42,7 @@ public class ItemRequestServiceIntegrationTests {
     private final ItemRequestRepository requestRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
+    private final ItemMapperImpl itemMapper;
 
     private UserDto requestorDto;
     private UserDto userDto;
@@ -86,7 +87,7 @@ public class ItemRequestServiceIntegrationTests {
         User requestor = userRepository.save(UserMapper.INSTANCE.toUser(requestorDto));
         ItemRequest request = requestRepository.save(ItemRequestMapper.INSTANCE.toItemRequest(requestDto));
         request.setRequestor(requestor);
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setRequest(request);
         List<ItemRequest> requests = List.of(request);
 
@@ -113,7 +114,7 @@ public class ItemRequestServiceIntegrationTests {
         User requestor = userRepository.save(UserMapper.INSTANCE.toUser(requestorDto));
         ItemRequest request = requestRepository.save(ItemRequestMapper.INSTANCE.toItemRequest(requestDto));
         request.setRequestor(requestor);
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setRequest(request);
         List<ItemRequest> requests = List.of(request);
 
@@ -139,7 +140,7 @@ public class ItemRequestServiceIntegrationTests {
         User requestor = userRepository.save(UserMapper.INSTANCE.toUser(requestorDto));
         ItemRequest request = requestRepository.save(ItemRequestMapper.INSTANCE.toItemRequest(requestDto));
         request.setRequestor(requestor);
-        Item item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        Item item = itemRepository.save(itemMapper.toItem(itemDto));
         item.setRequest(request);
 
         ItemRequestDto actualRequestDto = requestService

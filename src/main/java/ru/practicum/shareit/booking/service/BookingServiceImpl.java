@@ -120,14 +120,7 @@ public class BookingServiceImpl implements BookingService {
             throw new BookingException(String.format("Unknown state: %s", state));
         }
         Pageable pageable = PageRequest.of(from / size, size);
-        Page<Booking> bookingPage = getBookingListForOwnerByState(userId, status, pageable);
-        while (bookingPage.isEmpty()) {
-            if (bookingPage.getPageable().hasPrevious()) {
-                bookingPage = getBookingListForOwnerByState(userId, status, bookingPage.getPageable().previousOrFirst());
-            } else {
-                throw new BookingException("Бронирований нет");
-            }
-        }
+
         List<Booking> bookings = getBookingListForOwnerByState(userId, status, pageable).getContent();
         log.debug("Получен список бронирований вещей пользователя с id '{}' со статусом '{}' ", userId, state);
         return bookings.stream()

@@ -8,7 +8,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.mappers.ItemMapper;
+import ru.practicum.shareit.item.mappers.ItemMapperImpl;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.model.ItemRequest;
@@ -33,6 +33,8 @@ public class ItemRepositoryTests {
     @Autowired
     private ItemRequestRepository requestRepository;
 
+    private final ItemMapperImpl itemMapper = new ItemMapperImpl();
+
     private Item item;
     private Item item2;
 
@@ -42,7 +44,7 @@ public class ItemRepositoryTests {
         itemDto.setName("Молоток");
         itemDto.setDescription("Деревянный");
         itemDto.setAvailable(true);
-        item = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto));
+        item = itemRepository.save(itemMapper.toItem(itemDto));
         User user = userRepository.save(new User(1L, "User", "name@mail.com"));
         ItemRequest request = new ItemRequest(1L, "description", user, LocalDateTime.now());
         requestRepository.save(request);
@@ -51,7 +53,7 @@ public class ItemRepositoryTests {
         itemDto2.setName("Лестница");
         itemDto2.setDescription("металлическая");
         itemDto2.setAvailable(true);
-        item2 = itemRepository.save(ItemMapper.INSTANCE.toItem(itemDto2));
+        item2 = itemRepository.save(itemMapper.toItem(itemDto2));
         item2.setUser(user);
         item2.setRequest(request);
     }
@@ -67,7 +69,6 @@ public class ItemRepositoryTests {
         assertEquals(item2, items.get(1));
     }
 
-
     @Test
     @DisplayName("Получение списка вещей по ID")
     void findAllByRequestId() {
@@ -76,6 +77,4 @@ public class ItemRepositoryTests {
         assertEquals(1, items.size());
         assertEquals(item2, items.get(0));
     }
-
-
 }
