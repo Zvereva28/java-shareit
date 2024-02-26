@@ -9,7 +9,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.exeption.ItemNotFoundException;
+import ru.practicum.shareit.item.mappers.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -42,11 +44,15 @@ public class ItemRequestServiceImplTests {
     private UserRepository userRepository;
     @Mock
     private ItemRepository itemRepository;
+    @Mock
+    private ItemMapper itemMapper;
+
 
     private User requestor;
     private User user;
     private ItemRequestDto requestDto;
     private Item item;
+    private ItemDto itemDto;
 
     @BeforeEach
     void setUp() {
@@ -54,6 +60,7 @@ public class ItemRequestServiceImplTests {
         user = new User(2L, "User", "user@user.com");
         item = new Item(1L, "Щетка", "Для обуви", true, user,
                 ItemRequestMapper.INSTANCE.toItemRequest(requestDto));
+        itemDto = new ItemDto(1L, "Щетка", true, "Для обуви", 2L);
 
         requestDto = new ItemRequestDto();
         requestDto.setDescription("Хотел бы воспользоваться щёткой для обуви");
@@ -94,6 +101,7 @@ public class ItemRequestServiceImplTests {
         when(userRepository.findById(requestor.getId())).thenReturn(Optional.of(requestor));
         when(itemRepository.findAllByRequestId(request.getId())).thenReturn(items);
         when(requestRepository.getAllByRequestorId(requestor.getId())).thenReturn(requests);
+        when(itemMapper.toItemDto(item)).thenReturn(itemDto);
 
         List<ItemRequestDto> requestDtos = requestService.getAllUserItemsRequests(requestor.getId());
 
@@ -127,6 +135,7 @@ public class ItemRequestServiceImplTests {
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         when(itemRepository.findAllByRequestId(request.getId())).thenReturn(items);
         when(requestRepository.findAllItems(user.getId(), pageable)).thenReturn(requests);
+        when(itemMapper.toItemDto(item)).thenReturn(itemDto);
 
         List<ItemRequestDto> requestDtos = requestService.getAllItems(user.getId(), from, size);
 
@@ -158,6 +167,7 @@ public class ItemRequestServiceImplTests {
         when(userRepository.findById(requestor.getId())).thenReturn(Optional.of(requestor));
         when(itemRepository.findAllByRequestId(request.getId())).thenReturn(items);
         when(requestRepository.findById(requestor.getId())).thenReturn(Optional.of(request));
+        when(itemMapper.toItemDto(item)).thenReturn(itemDto);
 
         ItemRequestDto itemRequestDto = requestService
                 .getItemRequest(requestor.getId(), request.getId());

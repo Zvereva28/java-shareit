@@ -17,7 +17,7 @@ import ru.practicum.shareit.item.exeption.ItemBookerException;
 import ru.practicum.shareit.item.exeption.ItemException;
 import ru.practicum.shareit.item.exeption.ItemNotFoundException;
 import ru.practicum.shareit.item.mappers.CommentMapper;
-import ru.practicum.shareit.item.mappers.ItemMapperImpl;
+import ru.practicum.shareit.item.mappers.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
@@ -45,14 +45,15 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
     private final ItemRequestRepository requestRepository;
-    private final ItemMapperImpl itemMapper;
+    private final ItemMapper itemMapper;
 
 
     @Transactional
     @Override
     public ItemDto addItem(long userId, ItemDto itemDto) {
         User user = ifUserExistReturnUser(userId);
-        Item item = itemRepository.save(itemMapper.toItem(itemDto));
+        Item item = itemRepository.save(
+                itemMapper.toItem(itemDto));
         item.setUser(user);
         log.debug("Создана новая вещь - '{}'", item);
         if (itemDto.getRequestId() != null) {

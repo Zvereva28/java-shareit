@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import ru.practicum.shareit.booking.mappers.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.item.dto.CommentDto;
@@ -19,7 +18,7 @@ import ru.practicum.shareit.item.exeption.ItemBookerException;
 import ru.practicum.shareit.item.exeption.ItemException;
 import ru.practicum.shareit.item.exeption.ItemNotFoundException;
 import ru.practicum.shareit.item.mappers.CommentMapper;
-import ru.practicum.shareit.item.mappers.ItemMapperImpl;
+import ru.practicum.shareit.item.mappers.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
@@ -59,13 +58,15 @@ class ItemServiceImplTests {
     private BookingRepository bookingRepository;
     @Mock
     private CommentRepository commentRepository;
+    @Mock
+    private ItemMapper itemMapper;
+
 
     private ItemDto itemDto;
     private ItemDto otherItemDto;
     private UserDto userDto;
     private UserDto otherUserDto;
     private CommentDto commentDto;
-    private ItemMapperImpl itemMapper;
 
     @BeforeEach
     void setUp() {
@@ -91,11 +92,14 @@ class ItemServiceImplTests {
     @Test
     @DisplayName("Создание вещи")
     void createItem() {
-        Item item = itemMapper.toItem(itemDto);
+
         User user = UserMapper.INSTANCE.toUser(userDto);
+        Item item = new Item(1L, "Пила", "Для обуви", true, user, null);
         user.setId(1L);
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         when(itemRepository.save(any())).thenReturn(item);
+        when(itemMapper.toItem(itemDto)).thenReturn(item);
+        when(itemMapper.toItemDto(item)).thenReturn(itemDto);
 
         ItemDto actualItem = itemService.addItem(user.getId(), itemDto);
 
@@ -118,13 +122,14 @@ class ItemServiceImplTests {
     @Test
     @DisplayName("Обновление вещи")
     void updateItem() {
-        Item item = itemMapper.toItem(itemDto);
         User user = UserMapper.INSTANCE.toUser(userDto);
+        Item item = new Item(1L, "Табурет", "Для обуви", true, user, null);
         user.setId(1L);
         item.setId(1L);
         item.setUser(user);
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         when(itemRepository.findById(item.getId())).thenReturn(Optional.of(item));
+        when(itemMapper.toItemDto(item)).thenReturn(otherItemDto);
 
         ItemDto actualItem = itemService.updateItem(user.getId(), item.getId(), otherItemDto);
 
@@ -165,8 +170,8 @@ class ItemServiceImplTests {
     @Test
     @DisplayName("Обновление вещи с id другого пользователя")
     void updateItemUserNotItemOwnerReturnItemOwnerException() {
-        Item item = itemMapper.toItem(itemDto);
         User user = UserMapper.INSTANCE.toUser(userDto);
+        Item item = new Item(1L, "Табурет", "Для обуви", true, user, null);
         User otherUser = UserMapper.INSTANCE.toUser(otherUserDto);
         user.setId(1L);
         item.setId(1L);
@@ -184,15 +189,16 @@ class ItemServiceImplTests {
     @Test
     @DisplayName("Получение вещи пользователем, не являющимся владельцем")
     void getItemserNotOwnerReturnItemDto() {
-        Item item = itemMapper.toItem(itemDto);
-        item.setId(1L);
-        item.setUser(new User(1L, "User", "user@user.ru"));
+        Item item = new Item(1L, "Табурет", "Для обуви", true, new User(1L, "User", "user@user.ru"), null);
+
         Comment comment = CommentMapper.INSTANCE.toComment(commentDto);
         comment.setId(1L);
-        ItemOwnerDto itemOwnerDto = itemMapper.toItemOwnerDto(item);
-        itemOwnerDto.setComments(List.of(commentDto));
+        ItemOwnerDto itemOwnerDto = new ItemOwnerDto(1L, "Табурет", "Для обуви", null,
+                null, null, List.of(commentDto));
+
         when(itemRepository.findById(item.getId())).thenReturn(Optional.of(item));
         when(commentRepository.findAllByItemId(item.getId())).thenReturn(List.of(comment));
+        when(itemMapper.toItemOwnerDto(item)).thenReturn(itemOwnerDto);
 
         ItemDto actualItemDto = itemService.getItem(item.getId(), 2L);
 
@@ -202,7 +208,6 @@ class ItemServiceImplTests {
                 "Email не совпадают.");
         assertEquals(itemOwnerDto.getAvailable(), actualItemDto.getAvailable(),
                 "Доступности не совпадают.");
-        assertEquals(itemOwnerDto.getComments(), List.of(commentDto));
 
         verify(itemRepository, times(1)).findById(item.getId());
         verify(commentRepository, times(1)).findAllByItemId(item.getId());
@@ -213,9 +218,8 @@ class ItemServiceImplTests {
     public void getItemUserIdItemOwnerReturnItemOwnerDtoWithBookings() {
         long itemId = 1L;
         long userId = 1L;
-        Item item = itemMapper.toItem(itemDto);
-        item.setId(itemId);
-        item.setUser(new User(1L, "User", "user@user.ru"));
+        Item item = new Item(1L, "Табурет", "Для обуви", true, new User(1L, "User", "user@user.ru"), null);
+        ItemOwnerDto itemOwnerDto = new ItemOwnerDto(1L, "Табурет", "Для обуви", null, null, null, List.of(commentDto));
         Comment comment = CommentMapper.INSTANCE.toComment(commentDto);
         List<Booking> lastBookings = new ArrayList<>();
         Booking lastBooking = new Booking();
@@ -228,12 +232,8 @@ class ItemServiceImplTests {
         when(commentRepository.findAllByItemId(itemId)).thenReturn(List.of(comment));
         when(bookingRepository.findFirstByItemIdAndEndDateBefore(itemId)).thenReturn(lastBookings);
         when(bookingRepository.findFirstByItemIdAndStartDateAfter(itemId)).thenReturn(nextBookings);
+        when(itemMapper.toItemOwnerDto(item)).thenReturn(itemOwnerDto);
 
-        ItemOwnerDto itemOwnerDto = itemMapper.toItemOwnerDto(item);
-        itemOwnerDto.setComments(List.of(commentDto));
-        itemOwnerDto.setLastBooking(BookingMapper.INSTANCE.lastBookingDto(lastBooking));
-        itemOwnerDto.setNextBooking(BookingMapper.INSTANCE.nextBookingDto(nextBooking));
-        itemOwnerDto.setComments(List.of(commentDto));
 
         ItemOwnerDto actualItemDto = (ItemOwnerDto) itemService.getItem(item.getId(), userId);
 
@@ -243,7 +243,6 @@ class ItemServiceImplTests {
                 "Email не совпадают.");
         assertEquals(itemOwnerDto.getAvailable(), actualItemDto.getAvailable(),
                 "Доступности не совпадают.");
-        assertEquals(itemOwnerDto.getComments(), List.of(commentDto));
         assertNotNull(actualItemDto.getLastBooking());
         assertNotNull(actualItemDto.getNextBooking());
 
@@ -261,9 +260,8 @@ class ItemServiceImplTests {
         int from = 1;
         int size = 1;
         long itemId = 1L;
-        Item item = itemMapper.toItem(itemDto);
-        item.setId(itemId);
-        User user = new User(1L, "User", "user@user.ru");
+        User user = UserMapper.INSTANCE.toUser(userDto);
+        Item item = new Item(1L, "Табурет", "Для обуви", true, user, null);
         item.setUser(user);
         Comment comment = CommentMapper.INSTANCE.toComment(commentDto);
         List<Booking> lastBookings = new ArrayList<>();
@@ -273,11 +271,8 @@ class ItemServiceImplTests {
         Booking nextBooking = new Booking();
         nextBookings.add(nextBooking);
         List<Item> items = List.of(item);
-        ItemOwnerDto itemOwnerDto = itemMapper.toItemOwnerDto(item);
-        itemOwnerDto.setComments(List.of(commentDto));
-        itemOwnerDto.setLastBooking(BookingMapper.INSTANCE.lastBookingDto(lastBooking));
-        itemOwnerDto.setNextBooking(BookingMapper.INSTANCE.nextBookingDto(nextBooking));
-        itemOwnerDto.setComments(List.of(commentDto));
+        ItemOwnerDto itemOwnerDto = new ItemOwnerDto(1L, "Табурет", "Для обуви", null,
+                null, null, List.of(commentDto));
         List<ItemDto> itemDtos = List.of(itemOwnerDto);
 
         when(itemRepository.findAllByUserIdOrderByIdAsc(userId, PageRequest.of(from, size)))
@@ -286,6 +281,7 @@ class ItemServiceImplTests {
         when(bookingRepository.findFirstByItemIdAndEndDateBefore(itemId)).thenReturn(lastBookings);
         when(bookingRepository.findFirstByItemIdAndStartDateAfter(itemId)).thenReturn(nextBookings);
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(itemMapper.toItemOwnerDto(item)).thenReturn(itemOwnerDto);
 
         List<ItemDto> listItems = itemService.getAllItems(userId, from, size);
 
@@ -324,13 +320,15 @@ class ItemServiceImplTests {
         int from = 1;
         int size = 1;
 
-        Item item = itemMapper.toItem(itemDto);
-        item.setId(1L);
-        item.setUser(new User(1L, "User", "user@user.ru"));
+        User user = new User(1L, "User", "user@user.ru");
+        Item item = new Item(1L, "Пила", "Острая пила", true, user, null);
         List<Item> items = List.of(item);
+        ItemOwnerDto itemOwnerDto = new ItemOwnerDto(1L, "Пила", "Острая пила", null,
+                null, null, null);
 
         when(itemRepository.findByUserAndNameOrDescription(userId, searchText, PageRequest.of(from, size)))
                 .thenReturn(new PageImpl<>(items));
+        when(itemMapper.toItemDto(item)).thenReturn(itemDto);
 
         List<ItemDto> actualItems = itemService.searchItem(userId, searchText, from, size);
 
@@ -347,10 +345,9 @@ class ItemServiceImplTests {
     @Test
     @DisplayName("Публикация комментария пользователем, который арендовал вещь")
     void postCommentUserIsBookerReturnCommentDto() {
-        Item item = itemMapper.toItem(itemDto);
-        User user = UserMapper.INSTANCE.toUser(userDto);
-        user.setId(1L);
-        item.setId(1L);
+        User user = new User(1L, "User", "user@user.ru");
+        Item item = new Item(1L, "Пила", "Острая пила", true, user, null);
+
         List<Booking> bookings = new ArrayList<>();
         Booking booking = new Booking();
         booking.setEnd(LocalDateTime.now().minusDays(1));
@@ -400,8 +397,9 @@ class ItemServiceImplTests {
     void postCommentUserIsNotBookerException() {
         long userId = 1L;
         long itemId = 2L;
-        Item item = itemMapper.toItem(itemDto);
         User user = UserMapper.INSTANCE.toUser(userDto);
+        Item item = new Item(1L, "Пила", "Для обуви", true, user, null);
+
         user.setId(userId);
         item.setId(itemId);
 

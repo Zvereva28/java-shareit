@@ -6,8 +6,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.exeption.ItemNotFoundException;
-import ru.practicum.shareit.item.mappers.ItemMapperImpl;
+import ru.practicum.shareit.item.mappers.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -18,6 +19,7 @@ import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +32,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private final ItemRequestRepository itemRequestRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
-    private final ItemMapperImpl itemMapper;
+    private final ItemMapper itemMapper;
 
     @Override
     @Transactional
@@ -88,8 +90,12 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                         .orElseThrow(() -> new ItemNotFoundException(
                                 String.format("Запроса с id %d нет в базе", requestId))));
         List<Item> items = itemRepository.findAllByRequestId(itemRequestDto.getId());
-        itemRequestDto.setItems(items.stream()
-                .map(itemMapper::toItemDto).collect(Collectors.toList()));
+        List<ItemDto> list = new ArrayList<>();
+        for (Item item : items) {
+            ItemDto itemDto = itemMapper.toItemDto(item);
+            list.add(itemDto);
+        }
+        itemRequestDto.setItems(list);
         log.debug("Получен запрос с id '{}'", requestId);
 
         return itemRequestDto;
