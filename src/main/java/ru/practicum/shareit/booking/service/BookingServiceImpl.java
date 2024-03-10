@@ -2,6 +2,9 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -12,8 +15,8 @@ import ru.practicum.shareit.booking.mappers.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
@@ -91,7 +94,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getUserAllBooking(long userId, String state) {
+    public List<BookingDto> getUserAllBooking(long userId, String state, int from, int size) {
         ifUserExistReturnUser(userId);
         BookingStatus status;
         try {
@@ -99,16 +102,16 @@ public class BookingServiceImpl implements BookingService {
         } catch (IllegalArgumentException e) {
             throw new BookingException(String.format("Unknown state: %s", state));
         }
-        List<Booking> bookings = getBookingListByState(userId, status);
+        List<Booking> bookings = getElementsFromPage(userId, status, from, size).getContent();
 
-        log.debug("Получен список бронирований с параметром '{}' пользователя с id '{}'", state, userId);
+        log.info("Получен список бронирований с параметром '{}' пользователя с id '{}'", state, userId);
         return bookings.stream()
                 .map(BookingMapper.INSTANCE::toBookingReplyDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<BookingDto> getAllBookingByOwner(long userId, String state) {
+    public List<BookingDto> getAllBookingByOwner(long userId, String state, int from, int size) {
         ifUserExistReturnUser(userId);
         BookingStatus status;
         try {
@@ -116,7 +119,9 @@ public class BookingServiceImpl implements BookingService {
         } catch (IllegalArgumentException e) {
             throw new BookingException(String.format("Unknown state: %s", state));
         }
-        List<Booking> bookings = getBookingListForOwnerByState(userId, status);
+        Pageable pageable = PageRequest.of(from / size, size);
+
+        List<Booking> bookings = getBookingListForOwnerByState(userId, status, pageable).getContent();
         log.debug("Получен список бронирований вещей пользователя с id '{}' со статусом '{}' ", userId, state);
         return bookings.stream()
                 .map(BookingMapper.INSTANCE::toBookingReplyDto)
@@ -124,37 +129,37 @@ public class BookingServiceImpl implements BookingService {
 
     }
 
-    private List<Booking> getBookingListByState(long userId, BookingStatus state) {
+    private Page<Booking> getBookingListByState(long userId, BookingStatus state, Pageable pageable) {
         switch (state) {
             case ALL:
-                return bookingRepository.findAllByBookerIdOrderByStartDateDesc(userId);
+                return bookingRepository.findAllByBookerIdOrderByStartDateDesc(userId, pageable);
             case PAST:
-                return bookingRepository.findAllByBookerIdAndEndDateBefore(userId);
+                return bookingRepository.findAllByBookerIdAndEndDateBefore(userId, pageable);
             case FUTURE:
-                return bookingRepository.findAllByBookerIdAndStartDateAfter(userId);
+                return bookingRepository.findAllByBookerIdAndStartDateAfter(userId, pageable);
             case CURRENT:
-                return bookingRepository.findAllByBookerIdAndDateBeforeAndDateAfter(userId);
+                return bookingRepository.findAllByBookerIdAndDateBeforeAndDateAfter(userId, pageable);
             case WAITING:
             case REJECTED:
-                return bookingRepository.findAllByBookerIdAndStatusOrderByStartDateDesc(userId, state);
+                return bookingRepository.findAllByBookerIdAndStatusOrderByStartDateDesc(userId, state, pageable);
             default:
                 throw new BookingException(String.format("Unknown state: %s", state));
         }
     }
 
-    private List<Booking> getBookingListForOwnerByState(long userId, BookingStatus state) {
+    private Page<Booking> getBookingListForOwnerByState(long userId, BookingStatus state, Pageable pageable) {
         switch (state) {
             case ALL:
-                return bookingRepository.findAllByOwnerIdOrderByStartDateDesc(userId);
+                return bookingRepository.findAllByOwnerIdOrderByStartDateDesc(userId, pageable);
             case PAST:
-                return bookingRepository.findAllByOwnerIdAndEndDateBefore(userId);
+                return bookingRepository.findAllByOwnerIdAndEndDateBefore(userId, pageable);
             case FUTURE:
-                return bookingRepository.findAllByOwnerIdAndStartDateAfter(userId);
+                return bookingRepository.findAllByOwnerIdAndStartDateAfter(userId, pageable);
             case CURRENT:
-                return bookingRepository.findAllByOwnerIdAndDateBeforeAndDateAfter(userId);
+                return bookingRepository.findAllByOwnerIdAndDateBeforeAndDateAfter(userId, pageable);
             case WAITING:
             case REJECTED:
-                return bookingRepository.findAllByOwnerIdAndStatusOrderByStartDateDesc(userId, state);
+                return bookingRepository.findAllByOwnerIdAndStatusOrderByStartDateDesc(userId, state, pageable);
             default:
                 throw new BookingException(String.format("Unknown state: %s", state));
         }
@@ -176,6 +181,20 @@ public class BookingServiceImpl implements BookingService {
     private User ifUserExistReturnUser(long userId) {
         return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(
                 String.format("Пользователя с id %d нет в базе", userId)));
+    }
+
+    private Page<Booking> getElementsFromPage(long userId, BookingStatus state, int from, int size) {
+        Pageable pageable = PageRequest.of(from / size, size);
+
+        Page<Booking> bookingPage = getBookingListByState(userId, state, pageable);
+        while (bookingPage.isEmpty()) {
+            if (bookingPage.getPageable().hasPrevious()) {
+                bookingPage = getBookingListByState(userId, state, bookingPage.getPageable().previousOrFirst());
+            } else {
+                throw new BookingException("Бронирований нет");
+            }
+        }
+        return bookingPage;
     }
 
 

@@ -1,5 +1,7 @@
 package ru.practicum.shareit.booking.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -13,90 +15,90 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("select b " +
             "from Booking b " +
-            "where b.booker.id = ?1 " +
+            "where b.booker.id = :bookerId " +
             "ORDER by b.start DESC")
-    List<Booking> findAllByBookerIdOrderByStartDateDesc(long bookerId);
+    Page<Booking> findAllByBookerIdOrderByStartDateDesc(long bookerId, Pageable pageable);
 
     @Query("select b " +
             "from Booking b " +
-            "where b.booker.id = ?1 " +
+            "where b.booker.id = :bookerId " +
             "and b.end < CURRENT_TIMESTAMP " +
             "ORDER by b.start DESC")
-    List<Booking> findAllByBookerIdAndEndDateBefore(long bookerId);
+    Page<Booking> findAllByBookerIdAndEndDateBefore(long bookerId, Pageable pageable);
 
     @Query("select b " +
             "from Booking b " +
-            "where b.booker.id = ?1 " +
+            "where b.booker.id = :bookerId " +
             "and b.start > CURRENT_TIMESTAMP " +
             "ORDER by b.start DESC")
-    List<Booking> findAllByBookerIdAndStartDateAfter(long bookerId);
+    Page<Booking> findAllByBookerIdAndStartDateAfter(long bookerId, Pageable pageable);
 
     @Query("select b " +
             "from Booking b " +
-            "where b.booker.id = ?1 " +
+            "where b.booker.id = :bookerId " +
             "AND b.start <= CURRENT_TIMESTAMP " +
             "AND b.end >= CURRENT_TIMESTAMP " +
             "ORDER by b.start DESC")
-    List<Booking> findAllByBookerIdAndDateBeforeAndDateAfter(long bookerId);
+    Page<Booking> findAllByBookerIdAndDateBeforeAndDateAfter(long bookerId, Pageable pageable);
 
     @Query("select b " +
             "from Booking b " +
-            "where b.booker.id = ?1 " +
-            "and b.status = ?2 " +
+            "where b.booker.id = :bookerId " +
+            "and b.status = :status " +
             "ORDER by b.start DESC")
-    List<Booking> findAllByBookerIdAndStatusOrderByStartDateDesc(long bookerId, BookingStatus status);
+    Page<Booking> findAllByBookerIdAndStatusOrderByStartDateDesc(long bookerId, BookingStatus status, Pageable pageable);
 
 
     @Query("select b " +
             "from Booking as b " +
             "join b.item as i " +
-            "where i.user.id = ?1 " +
+            "where i.user.id = :ownerId " +
             "order by b.start desc")
-    List<Booking> findAllByOwnerIdOrderByStartDateDesc(long ownerId);
+    Page<Booking> findAllByOwnerIdOrderByStartDateDesc(long ownerId, Pageable pageable);
 
     @Query("select b " +
             "from Booking as b " +
             "join b.item as i " +
-            "where i.user.id = ?1 " +
+            "where i.user.id = :ownerId " +
             "and b.end < CURRENT_TIMESTAMP " +
             "order by b.start desc")
-    List<Booking> findAllByOwnerIdAndEndDateBefore(long ownerId);
+    Page<Booking> findAllByOwnerIdAndEndDateBefore(long ownerId, Pageable pageable);
 
     @Query("select b " +
             "from Booking as b " +
             "join b.item as i " +
-            "where i.user.id = ?1 " +
+            "where i.user.id = :ownerId " +
             "and b.start > CURRENT_TIMESTAMP " +
             "order by b.start desc")
-    List<Booking> findAllByOwnerIdAndStartDateAfter(long ownerId);
+    Page<Booking> findAllByOwnerIdAndStartDateAfter(long ownerId, Pageable pageable);
 
     @Query("select b " +
             "from Booking as b " +
             "join b.item as i " +
-            "where i.user.id = ?1 " +
+            "where i.user.id = :ownerId " +
             "AND b.start <= CURRENT_TIMESTAMP " +
             "AND b.end >= CURRENT_TIMESTAMP " +
             "order by b.start desc")
-    List<Booking> findAllByOwnerIdAndDateBeforeAndDateAfter(long ownerId);
+    Page<Booking> findAllByOwnerIdAndDateBeforeAndDateAfter(long ownerId, Pageable pageable);
 
     @Query("select b " +
             "from Booking as b " +
             "join b.item as i " +
-            "where i.user.id = ?1 " +
-            "and b.status = ?2 " +
+            "where i.user.id = :ownerId " +
+            "and b.status = :status " +
             "order by b.start desc")
-    List<Booking> findAllByOwnerIdAndStatusOrderByStartDateDesc(long ownerId, BookingStatus status);
+    Page<Booking> findAllByOwnerIdAndStatusOrderByStartDateDesc(long ownerId, BookingStatus status, Pageable pageable);
 
     @Query("select b " +
             "from Booking b " +
-            "where b.item.id = ?1 " +
+            "where b.item.id = :itemId " +
             "and b.start < CURRENT_TIMESTAMP " +
             "ORDER by b.start DESC")
     List<Booking> findFirstByItemIdAndEndDateBefore(long itemId);
 
     @Query("select b " +
             "from Booking b " +
-            "where b.item.id = ?1 " +
+            "where b.item.id = :itemId " +
             "and b.start > CURRENT_TIMESTAMP " +
             "and b.status = 'APPROVED' " +
             "ORDER by b.start asc")

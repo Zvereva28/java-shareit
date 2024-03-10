@@ -1,21 +1,17 @@
 package ru.practicum.shareit.request.mappers;
 
-import org.springframework.jdbc.core.RowMapper;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.request.model.ItemRequest;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+@Mapper
+public interface ItemRequestMapper {
 
-public class ItemRequestMapper implements RowMapper<ItemRequestDto> {
-    @Override
-    public ItemRequestDto mapRow(ResultSet rs, int rowNum) throws SQLException {
-        ItemRequestDto itemRequestDto = new ItemRequestDto();
-        itemRequestDto.setId(rs.getInt("id"));
-        itemRequestDto.setDescription(rs.getString("description"));
-        itemRequestDto.setRequestor(rs.getInt("requestor"));
-        itemRequestDto.setCreated(rs.getDate("created_date").toLocalDate());
+    ItemRequestMapper INSTANCE = Mappers.getMapper(ItemRequestMapper.class);
 
-        return itemRequestDto;
-    }
+    ItemRequest toItemRequest(ItemRequestDto itemRequestDto);
+
+    ItemRequestDto toItemRequestDto(ItemRequest itemRequest);
 
 }
