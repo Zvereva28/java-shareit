@@ -15,7 +15,7 @@ public class UserClient extends BaseClient {
     public UserClient(RestTemplateBuilder builder) {
         super(
                 builder
-                        .uriTemplateHandler(new DefaultUriBuilderFactory("http://server:9090" + "/users"))
+                        .uriTemplateHandler(new DefaultUriBuilderFactory("http://server:9090/users"))
                         .requestFactory(HttpComponentsClientHttpRequestFactory::new)
                         .build()
         );

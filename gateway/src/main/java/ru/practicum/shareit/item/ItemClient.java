@@ -17,7 +17,7 @@ public class ItemClient extends BaseClient {
     public ItemClient(RestTemplateBuilder builder) {
         super(
                 builder
-                        .uriTemplateHandler(new DefaultUriBuilderFactory("http://server:9090" + "/items"))
+                        .uriTemplateHandler(new DefaultUriBuilderFactory("http://server:9090/items"))
                         .requestFactory(HttpComponentsClientHttpRequestFactory::new)
                         .build()
         );

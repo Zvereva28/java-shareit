@@ -17,7 +17,7 @@ public class RequestClient extends BaseClient {
     public RequestClient(RestTemplateBuilder builder) {
         super(
                 builder
-                        .uriTemplateHandler(new DefaultUriBuilderFactory("http://server:9090" + "/requests"))
+                        .uriTemplateHandler(new DefaultUriBuilderFactory("http://server:9090/requests"))
                         .requestFactory(HttpComponentsClientHttpRequestFactory::new)
                         .build()
         );
@@ -31,16 +31,16 @@ public class RequestClient extends BaseClient {
         return get("/" + requestId, userId, null);
     }
 
-    public ResponseEntity<Object> getAllUserItemsRequests(long userId) {
-        return get("", userId, null);
-    }
-
     public ResponseEntity<Object> getAllItems(long userId, Integer from, Integer size) {
         Map<String, Object> parameters = Map.of(
                 "from", from,
                 "size", size
         );
         return get("/all?from={from}&size={size}", userId, parameters);
+    }
+
+    public ResponseEntity<Object> getAllUserItemsRequests(long userId) {
+        return get("", userId, null);
     }
 
 }
