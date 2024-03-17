@@ -15,9 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.service.BookingService;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.util.List;
 
 @Validated
@@ -31,7 +28,7 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<BookingDto> createBooking(
             @RequestHeader("X-Sharer-User-Id") long userId,
-            @Valid @RequestBody BookingDto bookingDto) {
+            @RequestBody BookingDto bookingDto) {
         return ResponseEntity.ok().body(bookingService.createBooking(userId, bookingDto));
     }
 
@@ -54,8 +51,8 @@ public class BookingController {
     public ResponseEntity<List<BookingDto>> getUserAllBooking(
             @RequestHeader("X-Sharer-User-Id") long userId,
             @RequestParam(name = "state", defaultValue = "ALL", required = false) String state,
-            @RequestParam(value = "from", defaultValue = "0", required = false) @Min(0) Integer from,
-            @RequestParam(value = "size", defaultValue = "10", required = false) @Min(1) @Max(100) Integer size) {
+            @RequestParam(value = "from", defaultValue = "0", required = false) Integer from,
+            @RequestParam(value = "size", defaultValue = "10", required = false) Integer size) {
         return ResponseEntity.ok().body(bookingService.getUserAllBooking(userId, state, from, size));
     }
 
@@ -63,8 +60,8 @@ public class BookingController {
     public ResponseEntity<List<BookingDto>> getAllBookingByOwner(
             @RequestHeader("X-Sharer-User-Id") long userId,
             @RequestParam(name = "state", defaultValue = "ALL", required = false) String state,
-            @RequestParam(value = "from", defaultValue = "0", required = false) @Min(0) Integer from,
-            @RequestParam(value = "size", defaultValue = "10", required = false) @Min(1) @Max(100) Integer size) {
+            @RequestParam(value = "from", defaultValue = "0", required = false) Integer from,
+            @RequestParam(value = "size", defaultValue = "10", required = false) Integer size) {
         return ResponseEntity.ok().body(bookingService.getAllBookingByOwner(userId, state, from, size));
 
     }

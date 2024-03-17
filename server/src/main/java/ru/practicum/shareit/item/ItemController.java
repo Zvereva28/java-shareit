@@ -16,9 +16,6 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.util.List;
 
 import static ru.practicum.shareit.ServiceHeaders.X_USER_ID;
@@ -52,8 +49,8 @@ public class ItemController {
 
     @GetMapping
     public List<ItemDto> getItems(@RequestHeader(value = X_USER_ID, required = true) int idUser,
-                                  @RequestParam(value = "from", defaultValue = "0") @Min(0) Integer from,
-                                  @RequestParam(value = "size", defaultValue = "20") @Min(1) @Max(100) Integer size) {
+                                  @RequestParam(value = "from", defaultValue = "0") Integer from,
+                                  @RequestParam(value = "size", defaultValue = "20") Integer size) {
         log.debug("Получен запрос на получение всех вещей владельца с ID = {}", idUser);
         return itemService.getAllItems(idUser, from, size);
     }
@@ -62,8 +59,8 @@ public class ItemController {
     public List<ItemDto> searchItem(
             @RequestHeader("X-Sharer-User-Id") long userId,
             @RequestParam("text") String text,
-            @RequestParam(value = "from", defaultValue = "0") @Min(0) Integer from,
-            @RequestParam(value = "size", defaultValue = "20") @Min(1) @Max(100) Integer size) {
+            @RequestParam(value = "from", defaultValue = "0") Integer from,
+            @RequestParam(value = "size", defaultValue = "20") Integer size) {
         log.debug("Получен запрос на поиск вещей со следующим текстом: {}", text);
         return itemService.searchItem(userId, text, from, size);
     }
@@ -72,7 +69,7 @@ public class ItemController {
     public CommentDto postComment(
             @RequestHeader("X-Sharer-User-Id") long userId,
             @PathVariable long itemId,
-            @Valid @RequestBody CommentDto commentDto) {
+            @RequestBody CommentDto commentDto) {
         log.debug("Получен запрос на добавление комментария");
         return itemService.postComment(userId, itemId, commentDto);
     }
