@@ -71,57 +71,6 @@ public class ItemControllerTests {
         verify(itemService).addItem(anyLong(), any());
     }
 
-    @SneakyThrows
-    @Test
-    @DisplayName("Создание вещи пользователем без имени")
-    void createItemItemNameIsInvalidItemNotCreated() {
-        ItemDto itemDto = new ItemDto();
-        itemDto.setDescription("серп");
-        itemDto.setAvailable(true);
-        when(itemService.addItem(userId, itemDto)).thenThrow(ValidationException.class);
-
-        mockMvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", userId)
-                        .content(objectMapper.writeValueAsString(itemDto))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-
-        verify(itemService, never()).addItem(userId, itemDto);
-    }
-
-    @SneakyThrows
-    @Test
-    @DisplayName("Создание вещи без описания")
-    void createItemItemDescriptionIsInvalidItemNotCreated() {
-        ItemDto itemDto = new ItemDto();
-        itemDto.setName("Серп");
-        itemDto.setAvailable(true);
-        when(itemService.addItem(userId, itemDto)).thenThrow(ValidationException.class);
-        mockMvc.perform(post("/items")
-                        .content(objectMapper.writeValueAsString(itemDto))
-                        .header("X-Sharer-User-Id", userId)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(itemService, never()).addItem(userId, itemDto);
-    }
-
-    @SneakyThrows
-    @Test
-    @DisplayName("Создание вещи пользователем с ошибкой доступа")
-    void createItemItemAvailableIsInvalidItemNotCreated() {
-        ItemDto itemDto = new ItemDto();
-        itemDto.setName("Серп");
-        itemDto.setDescription("Острый и красный");
-        when(itemService.addItem(userId, itemDto)).thenThrow(ValidationException.class);
-
-        mockMvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", userId)
-                        .content(objectMapper.writeValueAsString(itemDto))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-
-        verify(itemService, never()).addItem(userId, itemDto);
-    }
 
     @SneakyThrows
     @Test

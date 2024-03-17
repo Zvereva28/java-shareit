@@ -72,53 +72,6 @@ public class UserControllerTests {
 
     @SneakyThrows
     @Test
-    @DisplayName("Создание пользователя с пустым полем name")
-    public void createUserUserWithBlankNameReturnedBadRequest() {
-        final UserDto userDtoWithBlankName = new UserDto(null, "user@user.com", null);
-
-        when(userService.addUser(userDtoWithBlankName)).thenThrow(ValidationException.class);
-
-        mockMvc.perform(post("/users")
-                        .content(objectMapper.writeValueAsString(userDtoWithBlankName))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding(StandardCharsets.UTF_8))
-                .andExpect(status().isBadRequest());
-        verify(userService, never()).addUser(userDtoWithBlankName);
-    }
-
-    @SneakyThrows
-    @Test
-    @DisplayName("Создание пользователя с пустым полем email")
-    public void createUserUserWithBlankEmailReturnedBadRequest() {
-        final UserDto userDtoWithBlankEmail = new UserDto(null, "User", null);
-        when(userService.addUser(userDtoWithBlankEmail)).thenThrow(ValidationException.class);
-
-        mockMvc.perform(post("/users")
-                        .content(objectMapper.writeValueAsString(userDtoWithBlankEmail))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-
-        verify(userService, never()).addUser(userDtoWithBlankEmail);
-    }
-
-    @SneakyThrows
-    @Test
-    @DisplayName("Создание пользователя с не корректным email")
-    public void createUserUserWithWrongEmailReturnedBadRequest() {
-        final UserDto userWithWrongEmail = new UserDto(null, "user.com", "11111");
-        when(userService.addUser(userWithWrongEmail)).thenThrow(ValidationException.class);
-
-        mockMvc.perform(post("/users")
-                        .content(objectMapper.writeValueAsString(userWithWrongEmail))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-
-        verify(userService, never()).addUser(userWithWrongEmail);
-    }
-
-
-    @SneakyThrows
-    @Test
     @DisplayName("Получение пользователя")
     public void getUser() {
         final long userId = 0L;

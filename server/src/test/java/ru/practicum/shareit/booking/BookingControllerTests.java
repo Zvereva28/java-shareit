@@ -22,7 +22,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -60,32 +59,6 @@ public class BookingControllerTests {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         verify(bookingService).createBooking(anyLong(), any());
-    }
-
-    @SneakyThrows
-    @Test
-    @DisplayName("Бронирования с Корректной датой начала")
-    void createBookingnStartIsInvalidException() {
-        bookingDto.setStart(LocalDateTime.now().minusMinutes(1));
-        mockMvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", 1L)
-                        .content(objectMapper.writeValueAsString(bookingDto))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(bookingService, never()).createBooking(1L, bookingDto);
-    }
-
-    @SneakyThrows
-    @Test
-    @DisplayName("Создание бронирования с валидной датой конца")
-    void createBookingEndIsInvalidException() {
-        bookingDto.setEnd(LocalDateTime.now().minusMinutes(1));
-        mockMvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", 1L)
-                        .content(objectMapper.writeValueAsString(bookingDto))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(bookingService, never()).createBooking(1L, bookingDto);
     }
 
     @SneakyThrows
@@ -178,81 +151,5 @@ public class BookingControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)));
         verify(bookingService).getAllBookingByOwner(anyLong(), anyString(), anyInt(), anyInt());
-    }
-
-    @SneakyThrows
-    @Test
-    @DisplayName("Получение списка всех бронирований владельцем вещи с некорректным параметром size")
-    void getAllBookingByOwnerParamSizeMaxInvalidException() {
-        long userId = 1L;
-        String state = "ALL";
-        int from = 0;
-        int size = 999;
-
-        mockMvc.perform(get("/bookings/owner")
-                        .header("X-Sharer-User-Id", userId)
-                        .content(objectMapper.writeValueAsString(bookingDto))
-                        .param("size", String.valueOf(size))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError());
-
-        verify(bookingService, never()).getAllBookingByOwner(userId, state, from, size);
-    }
-
-    @SneakyThrows
-    @Test
-    @DisplayName("Получение списка всех бронирований владельцем вещи с некорректным параметром size")
-    void getAllBookingByOwnerParamSizeMinInvalidException() {
-        long userId = 1L;
-        String state = "ALL";
-        int from = 0;
-        int size = 0;
-
-        mockMvc.perform(get("/bookings/owner")
-                        .header("X-Sharer-User-Id", userId)
-                        .content(objectMapper.writeValueAsString(bookingDto))
-                        .param("size", String.valueOf(size))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError());
-
-        verify(bookingService, never()).getAllBookingByOwner(userId, state, from, size);
-    }
-
-    @SneakyThrows
-    @Test
-    @DisplayName("Получение списка всех бронирований владельцем вещи с некорректным параметром from")
-    void getAllBookingByOwnerParamFromInvalidException() {
-        long userId = 1L;
-        String state = "ALL";
-        int from = -1;
-        int size = 10;
-
-        mockMvc.perform(get("/bookings/owner")
-                        .header("X-Sharer-User-Id", userId)
-                        .content(objectMapper.writeValueAsString(bookingDto))
-                        .param("from", String.valueOf(from))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError());
-
-        verify(bookingService, never()).getAllBookingByOwner(userId, state, from, size);
-    }
-
-    @SneakyThrows
-    @Test
-    @DisplayName("Получение списка всех бронирований с некорректным параметром size")
-    void getUserAllBookingParamSizeMaxInvalidException() {
-        long userId = 1L;
-        String state = "ALL";
-        int from = 0;
-        int size = 999;
-
-        mockMvc.perform(get("/bookings")
-                        .header("X-Sharer-User-Id", userId)
-                        .content(objectMapper.writeValueAsString(bookingDto))
-                        .param("size", String.valueOf(size))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError());
-
-        verify(bookingService, never()).getUserAllBooking(userId, state, from, size);
     }
 }

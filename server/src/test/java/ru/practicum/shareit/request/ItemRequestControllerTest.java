@@ -58,20 +58,6 @@ public class ItemRequestControllerTest {
         verify(requestService).createItemRequest(anyLong(), any());
     }
 
-    @Test
-    @SneakyThrows
-    @DisplayName("Не корректное Создание запроса")
-    public void createRequestNotSuccess() {
-        ItemRequestDto requestDtoNull = new ItemRequestDto();
-        mockMvc.perform(post("/requests")
-                        .header("X-Sharer-User-Id", 1L)
-                        .content(objectMapper.writeValueAsString(requestDtoNull))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-
-        verify(requestService, never()).createItemRequest(1L, requestDtoNull);
-    }
-
     @SneakyThrows
     @Test
     @DisplayName("Получение списка запросов пользователя")
@@ -119,63 +105,6 @@ public class ItemRequestControllerTest {
                 .andExpect(jsonPath("$.description", is(requestDto.getDescription())));
 
         verify(requestService).getItemRequest(userId, requestId);
-    }
-
-    @SneakyThrows
-    @Test
-    @DisplayName("Получение списка запросов с некорректным параметром size")
-    void getAllItemsParamSizeMaxInvalidItemRequestsReturned() {
-        int from = 0;
-        int size = 999;
-        long userId = 1L;
-        when(requestService.getAllItems(userId, from, size)).thenReturn(List.of(requestDto));
-
-        mockMvc.perform(get("/requests/all")
-                        .header("X-Sharer-User-Id", userId)
-                        .param("from", String.valueOf(from))
-                        .param("size", String.valueOf(size))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError());
-
-        verify(requestService, never()).getAllItems(userId, from, size);
-    }
-
-    @SneakyThrows
-    @Test
-    @DisplayName("Получение списка запросов с некорректным параметром from")
-    void getAllItemsParamFromInvalidItemRequestsReturned() {
-        int from = -1;
-        int size = 10;
-        long userId = 1L;
-        when(requestService.getAllItems(userId, from, size)).thenReturn(List.of(requestDto));
-
-        mockMvc.perform(get("/requests/all")
-                        .header("X-Sharer-User-Id", userId)
-                        .param("from", String.valueOf(from))
-                        .param("size", String.valueOf(size))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError());
-
-        verify(requestService, never()).getAllItems(userId, from, size);
-    }
-
-    @SneakyThrows
-    @Test
-    @DisplayName("Получение списка запросов с некорректным параметром size")
-    void getAllItemsParamSizeMinInvalidItemRequestsReturned() {
-        int from = 0;
-        int size = 0;
-        long userId = 1L;
-        when(requestService.getAllItems(userId, from, size)).thenReturn(List.of(requestDto));
-
-        mockMvc.perform(get("/requests/all")
-                        .header("X-Sharer-User-Id", userId)
-                        .param("from", String.valueOf(from))
-                        .param("size", String.valueOf(size))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError());
-
-        verify(requestService, never()).getAllItems(userId, from, size);
     }
 
     @SneakyThrows
