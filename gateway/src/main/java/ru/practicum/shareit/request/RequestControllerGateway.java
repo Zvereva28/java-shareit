@@ -25,7 +25,7 @@ public class RequestControllerGateway {
     private final RequestClient requestClient;
 
     @PostMapping
-    public ResponseEntity<Object> createItem(
+    public ResponseEntity<Object> createItemRequest(
             @RequestHeader("X-Sharer-User-Id") long userId,
             @Valid @RequestBody ItemRequestDto itemRequestDto) {
         return requestClient.createItemRequest(userId, itemRequestDto);
@@ -40,7 +40,7 @@ public class RequestControllerGateway {
     }
 
     @GetMapping
-    public ResponseEntity<Object> getAllUserItems(
+    public ResponseEntity<Object> getAllUserItemsRequest(
             @RequestHeader("X-Sharer-User-Id") long userId) {
         return requestClient.getAllUserItemsRequests(userId);
     }

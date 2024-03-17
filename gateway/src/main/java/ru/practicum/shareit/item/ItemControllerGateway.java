@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
@@ -27,7 +28,7 @@ public class ItemControllerGateway {
     @PostMapping
     public ResponseEntity<Object> createItem(
             @RequestHeader("X-Sharer-User-Id") long userId,
-            @RequestBody ItemDto itemDto) {
+            @Valid @RequestBody ItemDto itemDto) {
         return itemClient.createItem(userId, itemDto);
 
     }
@@ -59,7 +60,7 @@ public class ItemControllerGateway {
     public ResponseEntity<Object> postComment(
             @RequestHeader("X-Sharer-User-Id") long userId,
             @PathVariable long itemId,
-            @RequestBody CommentDto commentDto) {
+            @Valid @RequestBody CommentDto commentDto) {
         return itemClient.postComment(userId, itemId, commentDto);
     }
 
